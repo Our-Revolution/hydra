@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.core.exceptions import FieldError
 from django.core.serializers.json import DjangoJSONEncoder
 from django.db import models
 from time import time
@@ -25,11 +26,13 @@ class BSDModel(models.Model):
         data = self.get_api_data()
         req = self._submit(self.get_api_endpoint(), data)
         
-        # todo: others
+        # todo: others, and may vary by model.
         if req.status_code == 200:
             return self
-            
-        return req
+        else:
+            print req.text
+            # raise FieldError()
+
 
     def _submit(self, endpoint, data={}, method_name='POST', base="/page/api"):
 
