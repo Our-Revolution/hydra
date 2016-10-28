@@ -1,0 +1,7 @@
+dj-database-url
+django
+django-dotenv
+gunicorn
+psycopg2
+whitenoise
+mysqlclient
