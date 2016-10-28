@@ -76,6 +76,10 @@ WSGI_APPLICATION = 'hydra.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.10/ref/settings/#databases
 
+BSD_API_HOST    = os.environ.get('BSD_API_HOST')
+BSD_API_ID      = os.environ.get('BSD_API_ID')
+BSD_API_SECRET  = os.environ.get('BSD_API_SECRET')
+
 DATABASES = {
 
     # Postgres / default
