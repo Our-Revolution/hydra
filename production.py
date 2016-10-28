@@ -1,4 +1,4 @@
-bind = '0.0.0.0:8080'
+bind = '0.0.0.0:80'
 pid = 'gunicorn.pid'
 django_settings = 'hydra.settings'
 debug = True

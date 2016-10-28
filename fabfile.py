@@ -9,7 +9,7 @@ def production():
 def deploy():
     with cd('hydra')
         run('workon hydra')
-        run('supervisorctl stop production')
+        run('supervisorctl stop gunicorn')
         run('git pull origin master')
-        run('supervisorctl start production')
+        run('supervisorctl start gunicorn')
         # todo: varnish, etc.
