@@ -7,14 +7,15 @@ import hmac, hashlib, json, requests, urllib, urlparse
 
 
 class BSDModel(models.Model):
-    FORBIDDEN_FIELDS = []
-
-    class Meta:
-        abstract = True
 
     BSD_API_HOST    = settings.BSD_API_HOST
     BSD_API_ID      = settings.BSD_API_ID
     BSD_API_SECRET  = settings.BSD_API_SECRET
+
+    FORBIDDEN_FIELDS = []
+
+    class Meta:
+        abstract = True
 
     def get_api_data(self, *args, **kwargs):
         serializer = BSDSerializer()
