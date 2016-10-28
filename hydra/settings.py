@@ -87,21 +87,21 @@ DATABASES = {
     # Postgres / default
     'default': dj_database_url.config(),
 
-    # Blue State Digital read-only replica, for majortom
-    'BSD': {
-        'ENGINE': "django.db.backends.mysql",
-        'NAME': os.environ.get('BSD_DATABASE_NAME'),
-        'USER': os.environ.get('BSD_DATABASE_USER'),
-        'HOST': os.environ.get('BSD_DATABASE_HOST'),
-        'PASSWORD': os.environ.get('BSD_DATABASE_PASSWORD'),
-        'OPTIONS': {
-            'ssl': {
-                'ca': os.path.join(BASE_DIR, os.environ.get('BSD_DATABASE_PATH_TO_CA_CERT')),
-                'cipher': "DHE-RSA-AES256-SHA",
-                'verify_server_cert': False
-            }
-        }
-    }
+    # # Blue State Digital read-only replica, for majortom
+    # 'BSD': {
+    #     'ENGINE': "django.db.backends.mysql",
+    #     'NAME': os.environ.get('BSD_DATABASE_NAME'),
+    #     'USER': os.environ.get('BSD_DATABASE_USER'),
+    #     'HOST': os.environ.get('BSD_DATABASE_HOST'),
+    #     'PASSWORD': os.environ.get('BSD_DATABASE_PASSWORD'),
+    #     'OPTIONS': {
+    #         'ssl': {
+    #             'ca': os.path.join(BASE_DIR, os.environ.get('BSD_DATABASE_PATH_TO_CA_CERT')),
+    #             'cipher': "DHE-RSA-AES256-SHA",
+    #             'verify_server_cert': False
+    #         }
+    #     }
+    # }
 
 }
 
