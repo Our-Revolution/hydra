@@ -1,4 +1,23 @@
 from django.forms import widgets
+from .models import Event
+
+
+
+class UnitsAndDurationWidget(widgets.MultiWidget):
+    
+    def __init__(self, attrs=None):
+        _widgets = (
+            widgets.TextInput(attrs=attrs),
+            widgets.Select(attrs=attrs, choices=Event.DURATION_MULTIPLIER),
+        )
+        super(UnitsAndDurationWidget, self).__init__(_widgets, attrs)
+
+    def decompress(self, value):
+        if value:
+            if value >= 60:
+                return ['{0:g}'.format(float(value) / 60), 60]
+            return [int(value), 1]
+        return [None, None]
 
 
 class HTML5EmailInput(widgets.TextInput):

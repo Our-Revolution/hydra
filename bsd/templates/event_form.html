@@ -2,7 +2,7 @@
 <html>
 <head>
     <title>{% if object.pk %}Edit Your{% else %}Create an{% endif %} Event</title>
-    {% load bootstrap3 %}
+    {% load bootstrap3 tz %}
     {% bootstrap_css %}
     {% bootstrap_javascript %}
     <style>
@@ -37,6 +37,7 @@
     
                     <form action="" method="post">
                         {% csrf_token %}
+                        
                         {% bootstrap_form form %}
                         
                         {% buttons %}

@@ -1,6 +1,7 @@
 from __future__ import unicode_literals
 from django.db import models
 from .api import BSDModel
+import datetime
 
 
 # should be a setting, but for quick and dirty purposes..
@@ -162,9 +163,9 @@ class EventType(models.Model):
 
 
 class Event(BSDModel):
-    FORBIDDEN_FIELDS = ["event_id", "latitude", "longitude", "start_day", \
-                        "host_addr_addressee", "host_addr_addr1", "host_addr_addr2", \
-                        "host_addr_zip", "host_addr_city", "host_addr_state_cd", \
+    FORBIDDEN_FIELDS = ["event_id", "latitude", "longitude", # 'start_day',
+                        "host_addr_addressee", "host_addr_addr1", "host_addr_addr2",
+                        "host_addr_zip", "host_addr_city", "host_addr_state_cd",
                         "host_addr_country"]
                         
     VISIBILITY_CHOICES = (
@@ -228,7 +229,7 @@ class Event(BSDModel):
     pledge_min = models.FloatField(blank=True, null=True)
     pledge_max = models.FloatField(blank=True, null=True)
     pledge_suggest = models.FloatField(blank=True, null=True)
-    rsvp_use_default_email_message = models.IntegerField(blank=True, null=True)
+    rsvp_use_default_email_message = models.IntegerField(blank=True, null=True, default=1)
     rsvp_email_message = models.TextField(blank=True, null=True)
     rsvp_email_message_html = models.TextField(blank=True, null=True)
     rsvp_use_reminder_email = models.IntegerField()
@@ -260,9 +261,21 @@ class Event(BSDModel):
         
         
     def _scrub_event_data_for_api(self, data):
+        
+        # needs integers for boolean representations
         for field in ['rsvp_use_reminder_email', 'rsvp_reminder_email_sent']:
             data[field] = int(bool(data[field]))
+            
+        # stored as an integer, but needs that string label for the API            
         data['attendee_visibility'] = self.VISIBILITY_CHOICES[int(data.get('attendee_visiblity', 2))][1]
+
+        # days is just its own weird mess
+        data['days'] = [{'start_datetime_system': datetime.datetime.combine(data['start_day'], data['start_time']),
+                    'duration': data['duration']}]
+
+        del data['start_day']
+        
+        
         return data
     
 

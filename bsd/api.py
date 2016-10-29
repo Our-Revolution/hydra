@@ -31,6 +31,7 @@ class BSDModel(models.Model):
         if req.status_code == 200:
             response = json.loads(req.text)
             if 'validation_errors' in response:
+                print response
                 errors = {}
                 for field, error_list in response['validation_errors'].iteritems():
                     errors[field] = ValidationError("%s %s" % (", ".join(errors).title(), field))
