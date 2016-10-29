@@ -24,6 +24,7 @@ class BSDModel(models.Model):
 
     def save(self, *args, **kwargs):
         data = self.get_api_data()
+        print data
         req = self._submit(self.get_api_endpoint(), data)
         
         # todo: others, and may vary by model.
