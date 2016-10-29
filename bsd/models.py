@@ -1,4 +1,5 @@
 from __future__ import unicode_literals
+from bs4 import BeautifulSoup
 from django.db import models
 from .api import BSDModel
 import datetime
@@ -50,8 +51,15 @@ class Constituent(BSDModel):
     is_deleted = models.IntegerField(blank=True, null=True)
 
     def check_password(self, password):
-        self._submit("/account/check_credentials", {'userid': self.userid, 'password': password })
-        import ipdb; ipdb.set_trace()
+        req = self._submit("/account/check_credentials", {'userid': self.userid, 'password': password })
+        soup = BeautifulSoup(req.text, "lxml")
+        try:
+            assert req['headers'].get('Content-Type').startswith('application/xml')
+            assert soup.find('cons')['id'] == str(self.cons_id)
+            assert soup.find('has_account').text == "1"
+            assert soup.find('is_banned').text == "0"
+        except AssertionError:
+            return None
 
     def __unicode__(self):
         return "%s %s" % (self.firstname, self.lastname)

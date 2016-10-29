@@ -109,6 +109,8 @@ DATABASES = {
 
 DATABASE_ROUTERS = ['bsd.routers.BSDRouter']
 
+AUTHENTICATION_BACKENDS = ('django.contrib.auth.backends.ModelBackend', 'bsd.backends.BSDAuthenticationBackend')
+
 
 # Password validation
 # https://docs.djangoproject.com/en/1.10/ref/settings/#auth-password-validators
