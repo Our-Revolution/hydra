@@ -51,13 +51,17 @@ class Constituent(BSDModel):
     is_deleted = models.IntegerField(blank=True, null=True)
 
     def check_password(self, password):
+        # there might be cleaner ways to implement this, but this covers
+        # a lot of bases in terms of what response we need to see from BSD
         req = self._submit("/account/check_credentials", {'userid': self.userid, 'password': password })
-        soup = BeautifulSoup(req.text, "lxml")
+        soup = BeautifulSoup(req.text, "xml")
         try:
-            assert req['headers'].get('Content-Type').startswith('application/xml')
+            assert req.headers.get('Content-Type').startswith('application/xml')
+            assert soup.find('cons') is not None
             assert soup.find('cons')['id'] == str(self.cons_id)
             assert soup.find('has_account').text == "1"
             assert soup.find('is_banned').text == "0"
+            return True
         except AssertionError:
             return None
 
