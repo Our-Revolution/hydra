@@ -16,6 +16,7 @@ class OurRevolutionObjectManager(models.Manager):
 
 
 class Constituent(models.Model):
+    API_ENCODING    = 'xml'
     cons_id = models.AutoField(primary_key=True)
     cons_source_id = models.IntegerField()
     prefix = models.CharField(max_length=16, blank=True, null=True)

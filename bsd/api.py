@@ -9,6 +9,9 @@ import hmac, hashlib, json, requests, urllib, urlparse
 
 class BSDModel(models.Model):
 
+    # largely: events use JSON, constituents use XML
+    API_ENCODING    = 'json'
+
     BSD_API_HOST    = settings.BSD_API_HOST
     BSD_API_ID      = settings.BSD_API_ID
     BSD_API_SECRET  = settings.BSD_API_SECRET
@@ -41,6 +44,13 @@ class BSDModel(models.Model):
             # raise FieldError()
 
 
+    def encode_payload(self, data):
+        # todo: where should JSON vs. XML endpoints switch live?
+        if self.API_ENCODING == 'json'
+            return json.dumps(data, cls=DjangoJSONEncoder)
+        return 
+
+
     def _submit(self, endpoint, data={}, method_name='POST', base="/page/api"):
 
         timestamp = str(int(time()))
@@ -67,4 +77,4 @@ class BSDModel(models.Model):
         if method_name.lower() == 'get':
             return requests.get(url)
         else:
-            return requests.post(url, {'event_api_version': '2', 'values': json.dumps(data, cls=DjangoJSONEncoder)})
+            return requests.post(url, {'event_api_version': '2', 'values': self.encode_payload(data)})
