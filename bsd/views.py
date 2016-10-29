@@ -1,9 +1,12 @@
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render
 from django.utils import timezone
+from django.utils.decorators import method_decorator
 from django.views.generic.edit import CreateView, UpdateView
 from .forms import EventForm
-from .models import Chapter, Constituent, Event, EventType, OUR_REVOLUTION_CHAPTER_ID
+from .models import Chapter, Event, EventType, OUR_REVOLUTION_CHAPTER_ID
+from .auth import Constituent
 import datetime
-
 
 
 
@@ -56,12 +59,18 @@ class EventEdit(UpdateView):
     template_name = 'event_form.html'
     success_url = '/'
     
-    def get(self, *args, **kwargs):
-        print "yo"
-        obj = self.get_object()
-        timezone.activate(obj.start_tz)
-        return super(EventEdit, self).get(*args, **kwargs)
-        
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        if self.request.user.has_perm('bsd.can_edit_own_%ss' % self.model._meta.verbose_name.lower(), obj=self.get_object()):
+            return super(EventEdit, self).dispatch(*args, **kwargs)
+        return render(self.request, "unauthorized.html", {'object_type': self.model._meta.verbose_name.lower()}, status=401)
+    
+#     def get(self, *args, **kwargs):
+#         print "yo"
+#         obj = self.get_object()
+#         timezone.activate(obj.start_tz)
+#         return super(EventEdit, self).get(*args, **kwargs)
+#         
     
     def form_valid(self, form):
         #

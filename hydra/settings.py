@@ -109,8 +109,10 @@ DATABASES = {
 
 DATABASE_ROUTERS = ['bsd.routers.BSDRouter']
 
-
 AUTHENTICATION_BACKENDS = ('bsd.backends.BSDAuthenticationBackend',)
+
+LOGIN_URL = '/login'
+LOGIN_REDIRECT_URL = '/'
 
 
 # Password validation

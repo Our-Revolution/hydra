@@ -1,13 +1,17 @@
 from __future__ import unicode_literals
-from bs4 import BeautifulSoup
 from django.db import models
 from .api import BSDModel
+# from .auth import Constituent - no circular imports
 import datetime
 
 
 # should be a setting, but for quick and dirty purposes..
 OUR_REVOLUTION_CHAPTER_ID = 2
 
+
+# looking for this? check auth.py, it got involved.
+# class Constituent(BSDModel):
+#     pass
 
 
 class OurRevolutionObjectManager(models.Manager):
@@ -16,75 +20,9 @@ class OurRevolutionObjectManager(models.Manager):
         return super(OurRevolutionObjectManager, self).get_queryset().filter(chapter_id=OUR_REVOLUTION_CHAPTER_ID)
 
 
-
-class Constituent(BSDModel):
-    API_ENCODING    = 'xml'
-    cons_id = models.AutoField(primary_key=True)
-    cons_source_id = models.IntegerField()
-    prefix = models.CharField(max_length=16, blank=True, null=True)
-    firstname = models.CharField(max_length=128, blank=True, null=True)
-    middlename = models.CharField(max_length=128, blank=True, null=True)
-    lastname = models.CharField(max_length=128, blank=True, null=True)
-    suffix = models.CharField(max_length=16, blank=True, null=True)
-    salutation = models.CharField(max_length=64, blank=True, null=True)
-    gender = models.CharField(max_length=1, blank=True, null=True)
-    birth_dt = models.DateTimeField(blank=True, null=True)
-    title = models.CharField(max_length=128, blank=True, null=True)
-    employer = models.CharField(max_length=128, blank=True, null=True)
-    occupation = models.CharField(max_length=128, blank=True, null=True)
-    income = models.DecimalField(max_digits=12, decimal_places=2, blank=True, null=True)
-    source = models.CharField(max_length=128, blank=True, null=True)
-    subsource = models.CharField(max_length=128, blank=True, null=True)
-    userid = models.CharField(max_length=128, blank=True, null=True)
-    password = models.CharField(max_length=128, blank=True, null=True)
-    is_validated = models.IntegerField()
-    is_banned = models.IntegerField()
-    change_password_next_login = models.IntegerField()
-    create_dt = models.DateTimeField(blank=True, null=True)
-    create_app = models.CharField(max_length=128, blank=True, null=True)
-    create_user = models.CharField(max_length=128, blank=True, null=True)
-    modified_dt = models.DateTimeField(blank=True, null=True)
-    modified_app = models.CharField(max_length=128, blank=True, null=True)
-    modified_user = models.CharField(max_length=128, blank=True, null=True)
-    status = models.IntegerField()
-    note = models.CharField(max_length=255, blank=True, null=True)
-    is_deleted = models.IntegerField(blank=True, null=True)
-    
-    def save(self, *args, **kwargs):
-        if kwargs == {'update_fields': ['last_login']}:
-            return self
-        return super(Constituent, self).save(*args, **kwargs)
-        
-    
-    def is_active(self):
-        return self.is_validation == 1 and self.is_banned == 0    
-
-    def check_password(self, password):
-        # there might be cleaner ways to implement this, but this covers
-        # a lot of bases in terms of what response we need to see from BSD
-        req = self._submit("/account/check_credentials", {'userid': self.userid, 'password': password })
-        soup = BeautifulSoup(req.text, "xml")
-        try:
-            assert req.headers.get('Content-Type').startswith('application/xml')
-            assert soup.find('cons') is not None
-            assert soup.find('cons')['id'] == str(self.cons_id)
-            assert soup.find('has_account').text == "1"
-            assert soup.find('is_banned').text == "0"
-            return True
-        except AssertionError:
-            return None
-
-    def __unicode__(self):
-        return "%s %s" % (self.firstname, self.lastname)
-
-    class Meta:
-        managed = False
-        db_table = 'cons'
-
-
 class ConstituentEmail(models.Model):
     cons_email_id = models.AutoField(primary_key=True)
-    cons = models.ForeignKey(Constituent)
+    cons = models.ForeignKey('Constituent')
     cons_email_type_id = models.IntegerField()  # todo - look into this better.
     is_primary = models.IntegerField()
     email = models.CharField(max_length=128)
@@ -114,7 +52,7 @@ class Chapter(models.Model):
     country = models.CharField(max_length=2, blank=True, null=True)
     create_dt = models.DateTimeField(blank=True, null=True)
     modified_dt = models.DateTimeField(blank=True, null=True)
-    create_admin_user = models.ForeignKey(Constituent, blank=True, null=True)
+    create_admin_user = models.ForeignKey('Constituent', blank=True, null=True)
     status = models.IntegerField()
     note = models.CharField(max_length=255, blank=True, null=True)
 
@@ -124,7 +62,7 @@ class Chapter(models.Model):
 
 
 class ConstituentChapter(models.Model):
-    cons = models.ForeignKey(Constituent)
+    cons = models.ForeignKey('Constituent')
     chapter = models.ForeignKey(Chapter)
 
     class Meta:
@@ -230,7 +168,7 @@ class Event(BSDModel):
     event_id = models.AutoField(primary_key=True)
     event_id_obfuscated = models.CharField(max_length=16, blank=True, null=True)
     event_type = models.ForeignKey(EventType, verbose_name="Choose an Event Type")
-    creator_cons = models.ForeignKey(Constituent)
+    creator_cons = models.ForeignKey('Constituent')
     contribution_page_id = models.IntegerField(blank=True, null=True)
     outreach_page_id = models.IntegerField(blank=True, null=True)
     name = models.CharField(max_length=128)

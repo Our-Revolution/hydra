@@ -1,18 +1,12 @@
-from .models import Constituent, ConstituentEmail
+from .auth import Constituent
+from .models import ConstituentEmail
 
 
 
-class BSDAuthenticationBackend(object):
-    
-    def __getattr__(self, *args, **kwargs):
-        print "yo"
-        print args
-        print kwargs
-        return super(BSDAuthenticationBackend, self).__getattr__(*args, **kwargs)
-    
+class BSDAuthenticationBackend(object):    
 
     def get_user(self, cons_id):
-        return BSDConstituent.objects.get(cons_id=cons_id)
+        return Constituent.objects.get(cons_id=cons_id)
 
     def authenticate(self, username, password):
         constituent_email = ConstituentEmail.objects.get(email__iexact=username)

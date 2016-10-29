@@ -1,5 +1,6 @@
 from django.contrib import admin
-from .models import Constituent, Event, EventType
+from .auth import Constituent
+from .models import Event, EventType
 from django.contrib.admin.templatetags.admin_urls import add_preserved_filters
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect

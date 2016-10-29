@@ -1,6 +1,7 @@
 import itertools
 from django import forms
-from .models import Event, Constituent
+from .models import Event
+from .auth import Constituent
 from .widgets import *
 
 
