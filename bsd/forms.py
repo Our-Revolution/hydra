@@ -1,35 +1,50 @@
+import itertools
 from django import forms
-from .models import Event
+from .models import Event, Constituent
 from .widgets import *
 
 
+
 class EventForm(forms.ModelForm):
+    host_receive_rsvp_emails = forms.ChoiceField(choices=((1, "YES, please email me when new people RSVP (recommended)"), (0, "No thanks")), widget=forms.widgets.RadioSelect)
+    public_phone = forms.ChoiceField(choices=((1, "YES, make my phone number visible to people viewing your event (recommended)"), (0, "Please keep my number private")), widget=forms.widgets.RadioSelect)
+    duration = forms.IntegerField(widget=UnitsAndDurationWidget)
+    creator_cons = forms.ModelChoiceField(queryset=Constituent.objects.none(), required=False, widget=forms.widgets.HiddenInput)
+    
+    def clean(self):
+        cleaned_data = super(EventForm, self).clean()
+        cleaned_data['duration'] = int(cleaned_data['duration']) * int(cleaned_data['duration_unit'])
+        return cleaned_data
+    
+    
+    def __init__(self, *args, **kwargs):
+        super(EventForm, self).__init__(*args, **kwargs)
+        
+        # super gross.
+        creator_cons_lookup = self.initial['creator_cons']
+        if isinstance(creator_cons_lookup, int):
+            creator_cons_lookup = creator_cons_lookup.pk
+        self.fields['creator_cons'].queryset = Constituent.objects.filter(pk=creator_cons_lookup)
+        
+        # minutes to hours. 30 == arbitrary
+#         if self.instance:
+#             if self.fields['duration'] > 30:
+#                 self.fields['duration'].value = int(self.fields['duration'].value / 60)
+#                 self.fields['duration_unit'].value = 60
+
     
     class Meta:
-
-        # todo: tbh this list might be better expressed as fields
+    
         # also, look into floppy and/or crispy forms
-
-        exclude = ['event_id_obfuscated', 'contribution_page_id', 'outreach_page_id', \
-                    'parent_event_id', 'latitude', 'longitude', 'host_addr_addressee', \
-                    'host_addr_addr1', 'host_addr_addr2', 'host_addr_zip', 'host_addr_city', \
-                    'host_addr_state_cd', 'host_addr_country', 'pledge_override_type', 'pledge_show', \
-                    'pledge_source', 'pledge_subsource', 'pledge_require', 'pledge_min', \
-                    'pledge_max', 'pledge_suggest', 'all_shifts_full', 'closed_msg', \
-                    'rsvp_email_message', 'rsvp_email_message_html', 'attendee_visibility', \
-                    'attendee_require_phone', 'attendee_volunteer_show', 'attendee_volunteer_message', \
-                    'rsvp_use_default_email', 'rsvp_reminder_email_sent', 'rsvp_use_default_email_message', \
-                    'rsvp_allow', 'rsvp_require_signup', 'rsvp_disallow_account', 'rsvp_reason', \
-                    'rsvp_redirect_url', 'flag_approval', 'create_dt', 'create_app', 'create_user',
-                    'modified_dt', 'modified_app', 'modified_user', 'status', 'note', 'is_visible', \
-                    'is_official', 'is_searchable', 'rsvp_use_reminder_email', \
-                    'rsvp_email_reminder_hours', 'start_dt']
+        fields = ['event_type', 'name', 'description', 'creator_name', 'creator_cons',        
+                    'start_day', 'start_time', 'duration', 'start_tz',
+                    'venue_name', 'venue_addr1', 'venue_addr2', 'venue_city',
+                        'venue_state_cd', 'venue_zip', 'venue_country', 'venue_directions',
+                    'host_receive_rsvp_emails', 'contact_phone', 'public_phone', 'capacity']
 
         model = Event
 
         widgets = {
-            'host_receive_rsvp_emails': forms.widgets.CheckboxInput(),
-            'public_phone': forms.widgets.CheckboxInput(),
             'creator_cons': forms.widgets.HiddenInput(),
             'chapter': forms.widgets.HiddenInput(),
             'venue_directions': forms.widgets.Textarea(attrs={'rows': 3}),

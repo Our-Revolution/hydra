@@ -1,6 +1,7 @@
 from __future__ import unicode_literals
 from django.db import models
 from .api import BSDModel
+import datetime
 
 
 # should be a setting, but for quick and dirty purposes..
@@ -163,9 +164,9 @@ class EventType(models.Model):
 
 
 class Event(BSDModel):
-    FORBIDDEN_FIELDS = ["event_id", "latitude", "longitude", "start_day", \
-                        "host_addr_addressee", "host_addr_addr1", "host_addr_addr2", \
-                        "host_addr_zip", "host_addr_city", "host_addr_state_cd", \
+    FORBIDDEN_FIELDS = ["event_id", "latitude", "longitude", # 'start_day',
+                        "host_addr_addressee", "host_addr_addr1", "host_addr_addr2",
+                        "host_addr_zip", "host_addr_city", "host_addr_state_cd",
                         "host_addr_country"]
                         
     VISIBILITY_CHOICES = (
@@ -173,7 +174,7 @@ class Event(BSDModel):
         (1, 'COUNT'),
         (2, 'FIRST'),
     )
-    TIME_ZONE_CHOICES = (('America/%s' % label, label) for label in ('Eastern', 'Central', 'Mountain', 'Pacific', 'Alaska', 'Hawaii'))
+    TIME_ZONE_CHOICES = (('America/%s' % pair[1], pair[0]) for pair in (('Eastern', 'New_York'), ('Central', 'Chicago'), ('Mountain', 'Denver'), ('Pacific', 'Los_Angeles'), ('Alaska', 'Anchorage'), ('Hawaii', 'Adak')))
     DURATION_MULTIPLIER = (
         (1, 'Minutes'),
         (60, 'Hours'),
@@ -192,7 +193,7 @@ class Event(BSDModel):
     start_dt = models.DateTimeField()
     start_tz = models.CharField(max_length=40, blank=True, null=True, verbose_name='Time Zone', choices=TIME_ZONE_CHOICES, default='America/Eastern')
     duration = models.IntegerField(blank=True, null=True)
-    parent_event_id = models.IntegerField()
+    parent_event_id = models.IntegerField(default=0)
     venue_name = models.CharField(max_length=255, verbose_name='Venue Name')
     venue_addr1 = models.CharField(max_length=255, verbose_name='Venue Address')
     venue_addr2 = models.CharField(max_length=255, blank=True, null=True, verbose_name='Venue Address #2')
@@ -210,26 +211,26 @@ class Event(BSDModel):
     host_addr_city = models.CharField(max_length=64, blank=True, null=True)
     host_addr_state_cd = models.CharField(max_length=100, blank=True, null=True)
     host_addr_country = models.CharField(max_length=2)
-    host_receive_rsvp_emails = models.IntegerField(verbose_name='Notify me when new people RSVP')
+    host_receive_rsvp_emails = models.IntegerField(default=1, verbose_name='Notify me when new people RSVP')
     contact_phone = models.CharField(max_length=25, blank=True, null=True)
-    public_phone = models.IntegerField(verbose_name='Make my phone number public to attendees')
-    capacity = models.IntegerField(verbose_name='Capacity Limit', help_text="Including guests. Leave 0 for unlimited.")
-    all_shifts_full = models.IntegerField()
+    public_phone = models.IntegerField(default=1, verbose_name='Make my phone number public to attendees')
+    capacity = models.IntegerField(verbose_name='Capacity Limit', help_text="Including guests. Leave 0 for unlimited.", default=0)
+    all_shifts_full = models.IntegerField(default=0)
     closed_msg = models.TextField(blank=True, null=True)
     attendee_visibility = models.IntegerField(choices=VISIBILITY_CHOICES, default=1)
-    attendee_require_phone = models.IntegerField()
-    attendee_volunteer_show = models.IntegerField()
-    attendee_volunteer_message = models.TextField()
+    attendee_require_phone = models.IntegerField(default=0)
+    attendee_volunteer_show = models.IntegerField(default=0)
+    attendee_volunteer_message = models.TextField(default=0)
     is_official = models.IntegerField(blank=True, null=True)
-    pledge_override_type = models.IntegerField()
-    pledge_show = models.IntegerField()
+    pledge_override_type = models.IntegerField(default=0)
+    pledge_show = models.IntegerField(default=0)
     pledge_source = models.CharField(max_length=128, blank=True, null=True)
     pledge_subsource = models.CharField(max_length=128, blank=True, null=True)
-    pledge_require = models.IntegerField()
+    pledge_require = models.IntegerField(default=0)
     pledge_min = models.FloatField(blank=True, null=True)
     pledge_max = models.FloatField(blank=True, null=True)
     pledge_suggest = models.FloatField(blank=True, null=True)
-    rsvp_use_default_email_message = models.IntegerField(blank=True, null=True)
+    rsvp_use_default_email_message = models.IntegerField(blank=True, null=True, default=1)
     rsvp_email_message = models.TextField(blank=True, null=True)
     rsvp_email_message_html = models.TextField(blank=True, null=True)
     rsvp_use_reminder_email = models.IntegerField()
@@ -240,8 +241,8 @@ class Event(BSDModel):
     rsvp_disallow_account = models.IntegerField(blank=True, null=True)
     rsvp_reason = models.TextField(blank=True, null=True)
     rsvp_redirect_url = models.CharField(max_length=255)
-    is_searchable = models.IntegerField()
-    flag_approval = models.IntegerField()
+    is_searchable = models.IntegerField(default=1)
+    flag_approval = models.IntegerField(default=0)
     chapter = models.ForeignKey(Chapter)
     create_dt = models.DateTimeField(blank=True, null=True)
     create_app = models.CharField(max_length=128, blank=True, null=True)
@@ -249,7 +250,7 @@ class Event(BSDModel):
     modified_dt = models.DateTimeField(blank=True, null=True)
     modified_app = models.CharField(max_length=128, blank=True, null=True)
     modified_user = models.CharField(max_length=128, blank=True, null=True)
-    status = models.IntegerField()
+    status = models.IntegerField(default=0)
     note = models.CharField(max_length=255, blank=True, null=True)
     objects = OurRevolutionObjectManager()
     
@@ -257,9 +258,25 @@ class Event(BSDModel):
         return self.name
     
     def get_api_data(self):
-        data = super(Event, self).get_api_data()
-        # hack
-        data['attendee_visibility'] = self.VISIBILITY_CHOICES[int(data['attendee_visiblity'])]
+        return self._scrub_event_data_for_api(super(Event, self).get_api_data())
+        
+        
+    def _scrub_event_data_for_api(self, data):
+        
+        # needs integers for boolean representations
+        for field in ['rsvp_use_reminder_email', 'rsvp_reminder_email_sent']:
+            data[field] = int(bool(data[field]))
+            
+        # stored as an integer, but needs that string label for the API            
+        data['attendee_visibility'] = self.VISIBILITY_CHOICES[int(data.get('attendee_visiblity', 2))][1]
+
+        # days is just its own weird mess
+        data['days'] = [{'start_datetime_system': datetime.datetime.combine(data['start_day'], data['start_time']),
+                    'duration': data['duration']}]
+
+        del data['start_day']
+        
+        
         return data
     
 

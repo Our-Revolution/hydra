@@ -27,12 +27,14 @@ class BSDModel(models.Model):
 
     def save(self, *args, **kwargs):
         data = self.get_api_data()
+        print data
         req = self._submit(self.get_api_endpoint(), data)
         
         # todo: others, and may vary by model.
         if req.status_code == 200:
             response = json.loads(req.text)
             if 'validation_errors' in response:
+                print response
                 errors = {}
                 for field, error_list in response['validation_errors'].iteritems():
                     errors[field] = ValidationError("%s %s" % (", ".join(errors).title(), field))
