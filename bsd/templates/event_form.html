@@ -1,55 +1,28 @@
-<!doctype html>
-<html>
-<head>
-    <title>{% if object.pk %}Edit Your{% else %}Create an{% endif %} Event</title>
-    {% load bootstrap3 tz %}
-    {% bootstrap_css %}
-    {% bootstrap_javascript %}
-    <style>
-        section{
-            padding: 1em 0 2em;
-        }
-    </style>
-</head>
-<body>
-    
-    <section>
-        <header>
-            <div class="container">
-                <div class="row">
-                    <div class="col-xs-2">
-                        <img src="https://ourrevolution.com/img/logo.svg" style="max-width: 120px;" />
-                    </div>
-                    <div class="col-xs-10"><h1>{% if object.pk %}Edit Your{% else %}Create an{% endif %} Event</h1>
-                    </div>
-                </div>
-            </div>
-        </header>
-    </section>
-    
-    {% bootstrap_messages %}
-    
-    <section>
-    
-        <div class="container">
-            <div class="row">
-                <div class="col-sm-8 col-sm-offset-2">
-    
-                    <form action="" method="post">
-                        {% csrf_token %}
-                        
-                        {% bootstrap_form form %}
-                        
-                        {% buttons %}
-                            <button type="submit" class="btn btn-lg btn-primary btn-block">{% if object.pk %}Update My Event{% else %}Create My Event!{% endif %}</button>
-                        {% endbuttons %}
-                    </form>
-                    
-                </div>
-            </div>
-        </div>
-        
-    </section>
+{% extends "base.html" %}
 
-</body>
-</html>
+{% load bootstrap3 tz %}
+
+
+{% block page_title %}{% if object.pk %}Edit Your{% else %}Create an{% endif %} Event | {{ block.super }}{% endblock %}
+
+{% block title %}{% if object.pk %}Edit Your{% else %}Create an{% endif %} Event{% endblock %}
+
+
+{% block content %}
+
+    <div class="col-sm-8 col-sm-offset-2">
+        
+        <form action="" method="post">
+            {% csrf_token %}
+                            
+            {% bootstrap_form form %}
+                            
+            {% buttons %}
+                <button type="submit" class="btn btn-lg btn-primary btn-block">{% if object.pk %}Update My Event{% else %}Create My Event!{% endif %}</button>
+            {% endbuttons %}
+        </form>
+                        
+    </div>
+
+
+{% endblock %}

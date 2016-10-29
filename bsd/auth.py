@@ -8,6 +8,9 @@ from .models import Event
 
 class Constituent(BSDModel):
     API_ENCODING    = 'xml'
+    
+    is_authenticated = True
+    
     cons_id = models.AutoField(primary_key=True)
     cons_source_id = models.IntegerField()
     prefix = models.CharField(max_length=16, blank=True, null=True)
@@ -56,20 +59,28 @@ class Constituent(BSDModel):
         
         
     def has_perms(self, perm_list, obj=None):
-        print perm_list
-        print obj
         if perm_list == ["bsd.can_edit_own_events"]:
             if isinstance(obj, Event) and Event.creator_cons == self:
                 return True
         return False
-    
+        
+    def has_module_perms(self, package_name):
+        # uhh...
+        return False
+        
+    # glorious hack is glorious.
+    @property
+    def is_staff(self):
+        STAFF_EMAILS = ['jon@ourrevolution.com', 'chris@ourrevolution.com', 'kyle@ourrevolution.com']
+        return self.constituentemail_set.filter(email__in=STAFF_EMAILS).exists()
+        
+    def get_username(self):
+        return self.constituentemail_set.order_by('-is_primary').first().email
+     
     def is_active(self):
         # could flesh out more here.
         # also todo: superusers and things
         return self.is_validation == 1 and self.is_banned == 0
-        
-    def is_authenticated(self):
-        return True
 
     def check_password(self, password):
         # there might be cleaner ways to implement this, but this covers

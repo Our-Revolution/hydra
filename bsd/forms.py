@@ -5,6 +5,15 @@ from .auth import Constituent
 from .widgets import *
 
 
+class EventPromoteForm(forms.Form):
+    subject = forms.CharField()
+    message = forms.CharField(widget=forms.widgets.Textarea(attrs={'rows': 8}))
+    volunteer_count = forms.IntegerField(widget=VolunteerCountWidget)
+    
+    def clean_volunteer_count(self):
+        # not very DRY but so it goes
+        self.cleaned_data['volunteer_count'] = min(250, self.cleaned_data['volunteer_count'])
+
 
 class EventForm(forms.ModelForm):
     host_receive_rsvp_emails = forms.ChoiceField(choices=((1, "YES, please email me when new people RSVP (recommended)"), (0, "No thanks")), widget=forms.widgets.RadioSelect)

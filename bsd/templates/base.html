@@ -1,0 +1,44 @@
+<!doctype html>
+<html>
+<head>
+    <title>{% block page_title %}Our Revolution{% endblock %}</title>
+    {% load bootstrap3 tz %}
+    {% bootstrap_css %}
+    {% bootstrap_javascript %}
+    <style>
+        section{
+            padding: 1em 0 2em;
+        }
+    </style>
+</head>
+<body>
+    
+    <section>
+        <header>
+            <div class="container">
+                <div class="row">
+                    <div class="col-xs-2">
+                        <img src="https://ourrevolution.com/img/logo.svg" style="max-width: 120px;" />
+                    </div>
+                    <div class="col-xs-10"><h1>{% block title %}{% endblock %}</h1>
+                    </div>
+                </div>
+            </div>
+        </header>
+    </section>
+    
+    {% bootstrap_messages %}
+    
+    <section>
+    
+        <div class="container">
+            <div class="row">
+                {% block content %}
+                {% endblock %}
+            </div>
+        </div>
+        
+    </section>
+
+</body>
+</html>

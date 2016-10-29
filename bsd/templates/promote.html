@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% load bootstrap3 tz %}
+
+{% block page_title %}Promote Your Event{% endblock %}
+
+{% block title %}Promote Your Event{% endblock %}
+
+{% block content %}
+
+    <div class="col-sm-8 col-sm-offset-2">
+        
+        <form action="" method="post">
+            {% csrf_token %}
+            
+            <p>Invite nearby attendees to attend your event!</p>
+                            
+            {% bootstrap_field form.subject %}
+            {% bootstrap_field form.message %}
+            
+            <p><label for="{{ form.volunteer_count.id_for_label }}">Please send this to {{ form.volunteer_count }} nearby supporters</label></p>
+                            
+            {% buttons %}
+                <button type="submit" class="btn btn-lg btn-primary btn-block">Submit for Approval</button>
+            {% endbuttons %}
+        </form>
+                        
+    </div>
+    
+
+
+{% endblock %}

@@ -3,7 +3,7 @@ from .models import ConstituentEmail
 
 
 
-class BSDAuthenticationBackend(object):    
+class BSDAuthenticationBackend(object):
 
     def get_user(self, cons_id):
         return Constituent.objects.get(cons_id=cons_id)

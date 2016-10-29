@@ -1,5 +1,7 @@
 from django.forms import widgets
 from .models import Event
+from django.utils.safestring import mark_safe
+from django.utils.html import format_html
 
 
 
@@ -37,3 +39,15 @@ class HTML5DateTimeInput(widgets.DateTimeInput):
 
 class HTML5TimeInput(widgets.TimeInput):
     input_type = 'time'
+    
+    
+class VolunteerCountWidget(HTML5NumberInput):
+    
+    def render(self, name, value, attrs=None):
+        if not attrs:
+            attrs = {}
+        attrs['min'] = 1
+        attrs['max'] = 250
+        attrs['size'] = 3
+        attrs['style'] = "margin: 0 1ex; text-align: center;"
+        return super(VolunteerCountWidget, self).render(name, value, attrs)
