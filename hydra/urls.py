@@ -21,4 +21,5 @@ urlpatterns = [
     url(r'^$', IndexView.as_view()),
     url(r'^admin/', admin.site.urls),
     url(r'', include('bsd.urls')),
+    url('^', include('django.contrib.auth.urls')),
 ]

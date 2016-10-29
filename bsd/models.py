@@ -49,6 +49,15 @@ class Constituent(BSDModel):
     status = models.IntegerField()
     note = models.CharField(max_length=255, blank=True, null=True)
     is_deleted = models.IntegerField(blank=True, null=True)
+    
+    def save(self, *args, **kwargs):
+        if kwargs == {'update_fields': ['last_login']}:
+            return self
+        return super(Constituent, self).save(*args, **kwargs)
+        
+    
+    def is_active(self):
+        return self.is_validation == 1 and self.is_banned == 0    
 
     def check_password(self, password):
         # there might be cleaner ways to implement this, but this covers
