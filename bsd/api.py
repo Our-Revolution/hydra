@@ -43,9 +43,9 @@ class BSDModel(models.Model):
 
     def encode_payload(self, data):
         # todo: where should JSON vs. XML endpoints switch live?
-        if self.API_ENCODING == 'json'
-            return json.dumps(data, cls=DjangoJSONEncoder)
-        return 
+#         if self.API_ENCODING == 'json':
+        return json.dumps(data, cls=DjangoJSONEncoder)
+#         return 
 
 
     def _submit(self, endpoint, data={}, method_name='POST', base="/page/api"):
