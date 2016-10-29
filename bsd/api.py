@@ -11,11 +11,6 @@ class BSDModel(models.Model):
 
     # largely: events use JSON, constituents use XML
     API_ENCODING    = 'json'
-
-    BSD_API_HOST    = settings.BSD_API_HOST
-    BSD_API_ID      = settings.BSD_API_ID
-    BSD_API_SECRET  = settings.BSD_API_SECRET
-
     FORBIDDEN_FIELDS = []
 
     class Meta:
@@ -60,18 +55,18 @@ class BSDModel(models.Model):
         api_params = data
 
         api_params.setdefault('api_ver', 2)                 # todo: might be a nice to make an env variable
-        api_params.setdefault('api_id', self.BSD_API_ID)
+        api_params.setdefault('api_id', settings.BSD_API_ID)
         api_params.setdefault('api_ts', timestamp)
 
         api_params = sorted(api_params.items())
-        api_params.append(('api_mac', hmac.new(self.BSD_API_SECRET.encode(), \
-                                        "\n".join([self.BSD_API_ID, \
+        api_params.append(('api_mac', hmac.new(settings.BSD_API_SECRET.encode(), \
+                                        "\n".join([settings.BSD_API_ID, \
                                                     timestamp, \
                                                     base + endpoint, \
                                                     '&'.join(["%s=%s" % (k, v) for k, v in api_params])]).encode(), \
                                         hashlib.sha1).hexdigest()))
 
-        url = urlparse.urlunparse(['https', self.BSD_API_HOST, base + endpoint, '', urllib.urlencode(api_params), ''])
+        url = urlparse.urlunparse(['https', settings.BSD_API_HOST, base + endpoint, '', urllib.urlencode(api_params), ''])
 
         method = getattr(requests, method_name.lower())
         
