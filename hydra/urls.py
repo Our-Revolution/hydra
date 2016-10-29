@@ -15,9 +15,12 @@ Including another URLconf
 """
 from django.conf.urls import url
 from django.contrib import admin
+from bsd.views import EventCreate, EventUpdate
 from .views import IndexView
 
 urlpatterns = [
     url(r'^$', IndexView.as_view()),
     url(r'^admin/', admin.site.urls),
+	url(r'^event/create$', EventCreate.as_view()),
+    url(r'^event/(?P<pk>[0-9]+)/$', EventUpdate.as_view())
 ]

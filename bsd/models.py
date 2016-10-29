@@ -149,6 +149,10 @@ class EventType(models.Model):
     enable_addr_autofill = models.IntegerField()
     enable_host_addr_autofill = models.IntegerField()
     objects = OurRevolutionObjectManager()
+    
+    def __unicode__(self):
+        return self.name
+    
 
     class Meta:
         managed = False
@@ -162,29 +166,40 @@ class Event(BSDModel):
                         "host_addr_addressee", "host_addr_addr1", "host_addr_addr2", \
                         "host_addr_zip", "host_addr_city", "host_addr_state_cd", \
                         "host_addr_country"]
+                        
+    VISIBILITY_CHOICES = (
+        (0, 'NONE'),
+        (1, 'COUNT'),
+        (2, 'FIRST'),
+    )
+    TIME_ZONE_CHOICES = (('America/%s' % label, label) for label in ('Eastern', 'Central', 'Mountain', 'Pacific', 'Alaska', 'Hawaii'))
+    DURATION_MULTIPLIER = (
+        (1, 'Minutes'),
+        (60, 'Hours'),
+    )
     event_id = models.AutoField(primary_key=True)
     event_id_obfuscated = models.CharField(max_length=16, blank=True, null=True)
-    event_type_id = models.IntegerField()
+    event_type = models.ForeignKey(EventType, verbose_name="Choose an Event Type")
     creator_cons = models.ForeignKey(Constituent)
     contribution_page_id = models.IntegerField(blank=True, null=True)
     outreach_page_id = models.IntegerField(blank=True, null=True)
     name = models.CharField(max_length=128)
     description = models.TextField()
-    creator_name = models.CharField(max_length=255, blank=True, null=True)
-    start_day = models.DateField()
-    start_time = models.TimeField()
+    creator_name = models.CharField(max_length=255, blank=True, null=True, verbose_name='Host Name')
+    start_day = models.DateField(verbose_name='Date')
+    start_time = models.TimeField(verbose_name='Start Time')
     start_dt = models.DateTimeField()
-    start_tz = models.CharField(max_length=40, blank=True, null=True)
+    start_tz = models.CharField(max_length=40, blank=True, null=True, verbose_name='Time Zone', choices=TIME_ZONE_CHOICES, default='America/Eastern')
     duration = models.IntegerField(blank=True, null=True)
     parent_event_id = models.IntegerField()
-    venue_name = models.CharField(max_length=255)
-    venue_addr1 = models.CharField(max_length=255)
-    venue_addr2 = models.CharField(max_length=255, blank=True, null=True)
-    venue_zip = models.CharField(max_length=16, blank=True, null=True)
-    venue_city = models.CharField(max_length=64)
-    venue_state_cd = models.CharField(max_length=100)
-    venue_country = models.CharField(max_length=2)
-    venue_directions = models.TextField(blank=True, null=True)
+    venue_name = models.CharField(max_length=255, verbose_name='Venue Name')
+    venue_addr1 = models.CharField(max_length=255, verbose_name='Venue Address')
+    venue_addr2 = models.CharField(max_length=255, blank=True, null=True, verbose_name='Venue Address #2')
+    venue_city = models.CharField(max_length=64, verbose_name='Venue City')
+    venue_state_cd = models.CharField(max_length=100, verbose_name='Venue State')
+    venue_zip = models.CharField(max_length=16, blank=True, null=True, verbose_name='Venue Zip Code')
+    venue_country = models.CharField(max_length=2, verbose_name='Venue Country')
+    venue_directions = models.TextField(blank=True, null=True, verbose_name='Directions to Venue')
     latitude = models.FloatField()
     longitude = models.FloatField()
     host_addr_addressee = models.CharField(max_length=255, blank=True, null=True)
@@ -194,13 +209,13 @@ class Event(BSDModel):
     host_addr_city = models.CharField(max_length=64, blank=True, null=True)
     host_addr_state_cd = models.CharField(max_length=100, blank=True, null=True)
     host_addr_country = models.CharField(max_length=2)
-    host_receive_rsvp_emails = models.IntegerField()
+    host_receive_rsvp_emails = models.IntegerField(verbose_name='Notify me when new people RSVP')
     contact_phone = models.CharField(max_length=25, blank=True, null=True)
-    public_phone = models.IntegerField()
-    capacity = models.IntegerField()
+    public_phone = models.IntegerField(verbose_name='Make my phone number public to attendees')
+    capacity = models.IntegerField(verbose_name='Capacity Limit', help_text="Including guests. Leave 0 for unlimited.")
     all_shifts_full = models.IntegerField()
     closed_msg = models.TextField(blank=True, null=True)
-    attendee_visibility = models.IntegerField()
+    attendee_visibility = models.IntegerField(choices=VISIBILITY_CHOICES, default=1)
     attendee_require_phone = models.IntegerField()
     attendee_volunteer_show = models.IntegerField()
     attendee_volunteer_message = models.TextField()
@@ -243,7 +258,7 @@ class Event(BSDModel):
     def get_api_data(self):
         data = super(Event, self).get_api_data()
         # hack
-        data['attendee_visibility'] = 'COUNT'
+        data['attendee_visibility'] = self.VISIBILITY_CHOICES[int(data['attendee_visiblity'])]
         return data
     
 
@@ -254,10 +269,7 @@ class Event(BSDModel):
         return "/event/%s" % path
 
     def save(self, *args, **kwargs):
-        try:
-            save_call = super(Event, self).save(*args, **kwargs)
-        except:
-            import ipdb; ipdb.set_trace()
+        save_call = super(Event, self).save(*args, **kwargs)
 
     class Meta:
         managed = False
