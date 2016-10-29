@@ -16,7 +16,7 @@ class OurRevolutionObjectManager(models.Manager):
 
 
 
-class Constituent(models.Model):
+class Constituent(BSDModel):
     API_ENCODING    = 'xml'
     cons_id = models.AutoField(primary_key=True)
     cons_source_id = models.IntegerField()
@@ -49,12 +49,39 @@ class Constituent(models.Model):
     note = models.CharField(max_length=255, blank=True, null=True)
     is_deleted = models.IntegerField(blank=True, null=True)
 
+    def check_password(self, password):
+        self._submit("/account/check_credentials", {'userid': self.userid, 'password': password })
+        import ipdb; ipdb.set_trace()
+
     def __unicode__(self):
         return "%s %s" % (self.firstname, self.lastname)
 
     class Meta:
         managed = False
         db_table = 'cons'
+
+
+class ConstituentEmail(models.Model):
+    cons_email_id = models.AutoField(primary_key=True)
+    cons = models.ForeignKey(Constituent)
+    cons_email_type_id = models.IntegerField()  # todo - look into this better.
+    is_primary = models.IntegerField()
+    email = models.CharField(max_length=128)
+    canonical_local_part = models.CharField(max_length=128, blank=True, null=True)
+    domain = models.CharField(max_length=128, blank=True, null=True)
+    double_validation = models.CharField(max_length=32, blank=True, null=True)
+    create_dt = models.DateTimeField(blank=True, null=True)
+    create_app = models.CharField(max_length=128, blank=True, null=True)
+    create_user = models.CharField(max_length=128, blank=True, null=True)
+    modified_dt = models.DateTimeField(blank=True, null=True)
+    modified_app = models.CharField(max_length=128, blank=True, null=True)
+    modified_user = models.CharField(max_length=128, blank=True, null=True)
+    status = models.IntegerField()
+    note = models.CharField(max_length=255, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'cons_email'
 
 
 class Chapter(models.Model):
