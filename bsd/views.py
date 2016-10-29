@@ -17,36 +17,21 @@ class EventCreate(CreateView):
     success_url = '/'
     
     def get_initial(self, *args, **kwargs):
-        return {
-            # sane defaults
+        
+        initial = {
             'chapter': Chapter.objects.get(pk=OUR_REVOLUTION_CHAPTER_ID),
-            'duration': 4,
-            'duration_unit': 60,
-            
-            'name': "Canvassing for Our Revolution",
-            'event_type': EventType.objects.get(name="Canvass for Our Revolution"),
-            'description': "Test description",
-            
-            'start_day': datetime.date.today(),
-            'start_time': datetime.datetime.time(datetime.datetime.now()),
-            
+            'start_day': datetime.date.today() + datetime.timedelta(days=4),
+            'start_time': datetime.time(hour=17, minute=0, second=0),
             'capacity': 0,
             'host_receive_rsvp_emails': 1,
             'public_phone': 1,
-            
-            
-            # JUST FOR DEBUG PURPOSES
-            'creator_cons': Constituent.objects.get(pk=927998),
-            'creator_name': "Jon Culver",
-            'start_tz': "America/Los_Angeles",
-            'venue_name': "Culver House",
-            'venue_addr1': "19521 44th Ave NE",
-            'venue_city': "Lake Forest Park",
-            'venue_state_cd': "WA",
-            'venue_zip': "98155",
-            'venue_country': "US",
-            'contact_phone': "502-807-1976",
         }
+        
+        if self.request.user.is_authenticated():
+            initial['creator_cons'] = self.request.user.pk
+            initial['creator_name'] = ' '.join([self.request.user.firstname, self.request.user.lastname])
+        
+        return initial
 
     def form_valid(self, form):
         #
@@ -64,14 +49,3 @@ class EventEdit(UpdateView):
         if self.request.user.has_perm('bsd.can_edit_own_%ss' % self.model._meta.verbose_name.lower(), obj=self.get_object()):
             return super(EventEdit, self).dispatch(*args, **kwargs)
         return render(self.request, "unauthorized.html", {'object_type': self.model._meta.verbose_name.lower()}, status=401)
-    
-#     def get(self, *args, **kwargs):
-#         print "yo"
-#         obj = self.get_object()
-#         timezone.activate(obj.start_tz)
-#         return super(EventEdit, self).get(*args, **kwargs)
-#         
-    
-    def form_valid(self, form):
-        #
-        return super(EventEdit, self).form_valid(form)
