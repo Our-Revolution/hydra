@@ -22,7 +22,7 @@ class OurRevolutionObjectManager(models.Manager):
 
 class ConstituentEmail(models.Model):
     cons_email_id = models.AutoField(primary_key=True)
-    cons = models.ForeignKey('Constituent')
+    cons = models.ForeignKey('Constituent', related_name="emails")
     cons_email_type_id = models.IntegerField()  # todo - look into this better.
     is_primary = models.IntegerField()
     email = models.CharField(max_length=128)
@@ -316,7 +316,7 @@ class EventAttendee(models.Model):
 
 class ConstituentAddress(models.Model):
     cons_addr_id = models.AutoField(primary_key=True)
-    cons = models.ForeignKey('Constituent')
+    cons = models.ForeignKey('Constituent', related_name="addresses")
     cons_addr_type_id = models.IntegerField()   # todo -- look into further.
     is_primary = models.IntegerField()
     addr1 = models.CharField(max_length=255, blank=True, null=True)

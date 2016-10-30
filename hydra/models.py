@@ -1,10 +1,11 @@
+from django.conf import settings
 from django.db import models
 from django.contrib.gis.geos import Point
 from django.contrib.gis.db import models as geo_models 
 from django.contrib.gis.measure import Distance
 from itertools import chain
 from localflavor.us.models import USZipCodeField
-import datetime
+import datetime, requests
 
 from bsd.auth import Constituent
 from bsd.models import ConstituentAddress, Event
@@ -23,6 +24,8 @@ class EventPromotionRequest(models.Model):
         ('approved', 'Approved'),
         ('sent', 'Sent')
     )
+    sender_display_name = models.CharField(max_length=128, null=True)
+    sender_email = models.EmailField(null=True)
     subject = models.CharField(max_length=128)
     message = models.CharField(max_length=1024)
     volunteer_count = models.IntegerField()
@@ -42,50 +45,78 @@ class EventPromotionRequest(models.Model):
         # convert event location to point
         point = Point(x=self.event.longitude, y=self.event.latitude, srid=4326)
         
-        constituents_to_email = []
+        constituent_ids_to_email = []
+        
+        print "excluding ..."
         
         # anything > 2 weeks ago, do not email.
         constituents_to_exclude = list(EventPromotionRequestThrough.objects.filter(event_promotion_request__sent__gt=datetime.datetime.now() - datetime.timedelta(days=14)).values_list('recipient_id', flat=True))
         
         for zip_distance in [1, 2, 5, 8, 10, 25, 50]:
         
+            print "Finding zips within %s miles ..." % zip_distance
+        
             for zip in ZipCode.objects.filter(centroid__distance_lte=(point, Distance(mi=zip_distance))):
-                
-                addresses = ConstituentAddress.objects.filter(zip=zip.zip) \
-                                .filter(cons__constituentemail__isnull=False) \
-                                .exclude(cons_id__in=constituents_to_exclude) \
-                                .exclude(cons__consemailchaptersubscription__isunsub=1) \
+            
+                print "Found %s" % zip.zip
+
+                candidate_constituents = Constituent.objects.filter(addresses__zip=zip.zip) \
+                                .filter(emails__isnull=False) \
+                                .exclude(pk__in=constituents_to_exclude) \
+                                .exclude(consemailchaptersubscription__isunsub=1) \
                                 .distinct() \
-                                .order_by('-cons__constituentemail__is_primary') \
-                                .values_list('cons__constituentemail__email', flat=True)
+                                .values_list('pk', flat=True)
                                 
-                print addresses.count()
-                import ipdb; ipdb.set_trace()
+                print "Found %s addresses... " % len(candidate_constituents)
                 
                 # add as many as we need.
-                constituents_to_email += list(addresses[0:min(self.volunteer_count if len(constituents_to_email) == 0 else len(constituents_to_email), self.volunteer_count - len(constituents_to_email))])
+                constituent_ids_to_email += list(candidate_constituents[0:min(self.volunteer_count if len(constituent_ids_to_email) == 0 else len(constituent_ids_to_email), self.volunteer_count - len(constituent_ids_to_email))])
                 
-                if len(constituents_to_email) >= self.volunteer_count:
+                if len(constituent_ids_to_email) >= self.volunteer_count:
                     break
                     
-            if len(constituents_to_email) >= self.volunteer_count:
+            if len(constituent_ids_to_email) >= self.volunteer_count:
                 break
                 
-                
-        import ipdb; ipdb.set_trace()
+        print "All done, we found enough."
         
-        # mail via mailgun.
+        constituents = Constituent.objects.filter(pk__in=constituent_ids_to_email)
+        
+        email_addresses = constituents.order_by('-emails__is_primary').values_list('emails__email', flat=True)
+        
+        print "MAILING !!!"
+        
+        print self.subject
+        print self.message
+        print email_addresses
+        
+        # debug measure.
+        if False:
+            requests.post("https://api.mailgun.net/v3/%s/messages" % settings.MAILGUN_API_DOMAIN,
+                            auth=("api", settings.MAILGUN_API_KEY),
+                            data={"from": "%s <%s>" % (self.sender_display_name, self.sender_email),
+                                      "to": [", ".join(email_addresses)],
+                                      "subject": self.subject,
+                                      "text": self.message})
+
+        print "OK time to add recipients for book keeping ..."
+                                  
+        # add as recipients for log keeping
+        EventPromotionRequestThrough.objects.bulk_create([
+            EventPromotionRequestThrough(event_promotion_request_id=self.pk, recipient_id=recipient) for recipient in constituents.values_list('pk', flat=True)
+        ])
             
-        # self.sent = datetime.datetime.now()
-        # self.save()
+        self.sent = datetime.datetime.now()
+        self.save()
     
 
     def save(self, *args, **kwargs):
         if not self.host_id and self.event and self.event.creator_cons:
             self.host = self.event.creator_cons
-        return super(EventPromotionRequest, self).save(*args, **kwargs)
+        super(EventPromotionRequest, self).save(*args, **kwargs)
         if not self.sent and self.status == 'sent':
             self._send()
+        return self
             
             
 

@@ -24,6 +24,15 @@ class EventPromotionRequestAdmin(admin.ModelAdmin):
     raw_id_fields = ['event', 'host', 'recipients']
     form = EventPromotionRequestAdminForm
     
+    def get_object(self, request, object_id, from_field=None):
+        obj = super(EventPromotionRequestAdmin, self).get_object(request, object_id)
+        if obj is not None:
+            if not obj.sender_display_name:
+                obj.sender_display_name = request.user.get_full_name()
+            if not obj.sender_email:
+                obj.sender_email = request.user.email
+        return obj
+    
     def get_queryset(self, request):
         return super(EventPromotionRequestAdmin, self).get_queryset(request).prefetch_related(Prefetch('event', Event.objects.all()), Prefetch('host', Constituent.objects.all()), Prefetch('event__event_type', EventType.objects.all()))
     

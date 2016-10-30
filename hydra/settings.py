@@ -155,3 +155,10 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 STATIC_ROOT = os.path.join(BASE_DIR, '.static')
+
+
+# Mailgun
+
+MAILGUN_API_KEY = os.environ.get('MAILGUN_API_KEY', None)
+MAILGUN_API_DOMAIN = os.environ.get('MAILGUN_API_DOMAIN', None)
+MAILGUN_DOMAIN = os.environ.get('MAILGUN_DOMAIN', None)
