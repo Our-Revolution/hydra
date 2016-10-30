@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib import admin
 from django.db.models import Prefetch
-from .models import EventPromotionRequest
+from .models import EventPromotionRequest, ZipCode
 from bsd.models import Event, EventType
 from bsd.auth import Constituent
 
@@ -35,3 +35,9 @@ class EventPromotionRequestAdmin(admin.ModelAdmin):
         
     def host_name(self, obj):
         return obj.event.creator_name
+        
+        
+@admin.register(ZipCode)
+class ZipCodeAdmin(admin.ModelAdmin):
+    search_fields = ['zip']
+    list_display = ['zip']

@@ -1,13 +1,19 @@
 from django.db import models
-from bsd.auth import Constituent
-from bsd.models import Event
+from django.contrib.gis.geos import Point
+from django.contrib.gis.db import models as geo_models 
+from django.contrib.gis.measure import Distance
+from itertools import chain
+from localflavor.us.models import USZipCodeField
+import datetime
 
+from bsd.auth import Constituent
+from bsd.models import ConstituentAddress, Event
 from .fields import CrossDatabaseForeignKey
 
 
 class EventPromotionRequestThrough(models.Model):
     event_promotion_request = models.ForeignKey('EventPromotionRequest')
-    recipient = CrossDatabaseForeignKey(Constituent, db_constraint=False)
+    recipient = CrossDatabaseForeignKey(Constituent, db_constraint=False, related_name='+')
 
 
 
@@ -33,25 +39,45 @@ class EventPromotionRequest(models.Model):
             # todo: raise something; only send once.
             return None
             
-            
-        # todos:
-        
         # convert event location to point
+        point = Point(x=self.event.longitude, y=self.event.latitude, srid=4326)
         
-        # find ?? 5 ?? zip codes nearby; step up from there
-
-
-
-        # find constituents, by cons_addr --> zip code
+        constituents_to_email = []
         
-        # exclude folks who have received one in the last ?? 14 ?? days
+        # anything > 2 weeks ago, do not email.
+        constituents_to_exclude = list(EventPromotionRequestThrough.objects.filter(event_promotion_request__sent__gt=datetime.datetime.now() - datetime.timedelta(days=14)).values_list('recipient_id', flat=True))
         
-        # exclude folks who have unsubscribed
+        for zip_distance in [1, 2, 5, 8, 10, 25, 50]:
+        
+            for zip in ZipCode.objects.filter(centroid__distance_lte=(point, Distance(mi=zip_distance))):
+                
+                addresses = ConstituentAddress.objects.filter(zip=zip.zip) \
+                                .filter(cons__constituentemail__isnull=False) \
+                                .exclude(cons_id__in=constituents_to_exclude) \
+                                .exclude(cons__consemailchaptersubscription__isunsub=1) \
+                                .distinct() \
+                                .order_by('-cons__constituentemail__is_primary') \
+                                .values_list('cons__constituentemail__email', flat=True)
+                                
+                print addresses.count()
+                import ipdb; ipdb.set_trace()
+                
+                # add as many as we need.
+                constituents_to_email += list(addresses[0:min(self.volunteer_count if len(constituents_to_email) == 0 else len(constituents_to_email), self.volunteer_count - len(constituents_to_email))])
+                
+                if len(constituents_to_email) >= self.volunteer_count:
+                    break
+                    
+            if len(constituents_to_email) >= self.volunteer_count:
+                break
+                
+                
+        import ipdb; ipdb.set_trace()
         
         # mail via mailgun.
             
-        self.sent = datetime.datetime.now()
-        self.save()
+        # self.sent = datetime.datetime.now()
+        # self.save()
     
 
     def save(self, *args, **kwargs):
@@ -60,4 +86,10 @@ class EventPromotionRequest(models.Model):
         return super(EventPromotionRequest, self).save(*args, **kwargs)
         if not self.sent and self.status == 'sent':
             self._send()
-        
+            
+            
+
+class ZipCode(models.Model):
+    zip = USZipCodeField()
+    centroid = geo_models.PointField(srid=4326, null=True, blank=True)
+    geom = geo_models.MultiPolygonField(srid=4326)

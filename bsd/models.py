@@ -313,3 +313,50 @@ class EventAttendee(models.Model):
         managed = False
         db_table = 'event_attendee'
 
+
+class ConstituentAddress(models.Model):
+    cons_addr_id = models.AutoField(primary_key=True)
+    cons = models.ForeignKey('Constituent')
+    cons_addr_type_id = models.IntegerField()   # todo -- look into further.
+    is_primary = models.IntegerField()
+    addr1 = models.CharField(max_length=255, blank=True, null=True)
+    addr2 = models.CharField(max_length=255, blank=True, null=True)
+    addr3 = models.CharField(max_length=255, blank=True, null=True)
+    city = models.CharField(max_length=64, blank=True, null=True)
+    state_cd = models.CharField(max_length=100, blank=True, null=True)
+    zip = models.CharField(max_length=16, blank=True, null=True)
+    zip_4 = models.CharField(max_length=4, blank=True, null=True)
+    country = models.CharField(max_length=2, blank=True, null=True)
+    addr_aug_ver = models.IntegerField()
+    addr_aug_dt = models.DateTimeField(blank=True, null=True)
+    geocoder_accuracy = models.IntegerField(blank=True, null=True)
+    create_dt = models.DateTimeField(blank=True, null=True)
+    create_app = models.CharField(max_length=128, blank=True, null=True)
+    create_user = models.CharField(max_length=128, blank=True, null=True)
+    modified_dt = models.DateTimeField(blank=True, null=True)
+    modified_app = models.CharField(max_length=128, blank=True, null=True)
+    modified_user = models.CharField(max_length=128, blank=True, null=True)
+    status = models.IntegerField()
+    note = models.CharField(max_length=255, blank=True, null=True)
+    latitude = models.FloatField()
+    longitude = models.FloatField()
+
+    class Meta:
+        managed = False
+        db_table = 'cons_addr'
+        
+        
+        
+class ConsEmailChapterSubscription(models.Model):
+    cons_email_chapter_subscription_id = models.AutoField(primary_key=True)
+    cons_email = models.ForeignKey('ConstituentEmail')
+    cons = models.ForeignKey('Constituent')
+    chapter = models.ForeignKey('Chapter')
+    isunsub = models.IntegerField()
+    unsub_dt = models.DateTimeField(blank=True, null=True)
+    modified_dt = models.DateTimeField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'cons_email_chapter_subscription'
+        unique_together = (('cons_email', 'chapter'),)

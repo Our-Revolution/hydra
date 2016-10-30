@@ -91,7 +91,7 @@ DATABASES = {
 
     # Blue State Digital read-only replica, for majortom
     'BSD': {
-        'ENGINE': "django.db.backends.mysql",
+        'ENGINE': "django.contrib.gis.db.backends.mysql",
         'NAME': os.environ.get('BSD_DATABASE_NAME'),
         'USER': os.environ.get('BSD_DATABASE_USER'),
         'HOST': os.environ.get('BSD_DATABASE_HOST'),
@@ -106,6 +106,7 @@ DATABASES = {
     }
 
 }
+
 
 DATABASE_ROUTERS = ['bsd.routers.BSDRouter']
 
