@@ -23,3 +23,6 @@ urlpatterns = [
     url(r'', include('bsd.urls')),
     url('^', include('django.contrib.auth.urls')),
 ]
+
+
+admin.site.site_header = "Hydra administration"

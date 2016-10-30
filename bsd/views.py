@@ -7,6 +7,7 @@ from django.views.generic.edit import CreateView, FormView, UpdateView
 from .forms import EventForm, EventPromoteForm
 from .models import Chapter, Event, EventType, OUR_REVOLUTION_CHAPTER_ID
 from .auth import Constituent
+from hydra.models import EventPromotionRequest
 import datetime
 
 
@@ -58,25 +59,29 @@ class EventEdit(EventCreatorMixin, UpdateView):
     
     
 
-class EventPromote(SingleObjectTemplateResponseMixin, SingleObjectMixin, EventCreatorMixin, FormView):
+class EventPromote(EventCreatorMixin, CreateView):
+    # hack for EventCreator permissions mixin
     model = Event
+    
+    # actual model is the request, as set on the form.
     form_class = EventPromoteForm
     success_url = "/events"
     template_name = "promote.html"
     
+    def form_invalid(self, form):
+        import ipdb; ipdb.set_trace()
+    
     def get_initial(self, *args, **kwargs):
-        print self.object
+        event = Event.objects.get(pk=self.kwargs['pk'])
+
         return {
-                    'volunteer_count': 100 if self.object.capacity == 0 else self.object.capacity * 2,
-                    'subject': "Please come to my %s event" % self.object.event_type.name,
+                    'event': event,
+                    'volunteer_count': 100 if event.capacity == 0 else event.capacity * 2,
+                    'subject': "Please come to my %s event" % event.event_type.name,
                     'message': """Hello --
                     
 I'm hoping to get more attendees at my event, %(name)s. Could you please come?
 
 Thanks!
 
-%(creator_name)s""" % dict(self.object.__dict__)}
-    
-    def get(self, request, *args, **kwargs):
-        self.object = self.get_object()
-        return super(EventPromote, self).get(request, *args, **kwargs)
+%(creator_name)s""" % dict(event.__dict__)}

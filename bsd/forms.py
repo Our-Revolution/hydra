@@ -1,18 +1,34 @@
 import itertools
 from django import forms
 from .models import Event
+from hydra.models import EventPromotionRequest
 from .auth import Constituent
 from .widgets import *
 
 
-class EventPromoteForm(forms.Form):
-    subject = forms.CharField()
-    message = forms.CharField(widget=forms.widgets.Textarea(attrs={'rows': 8}))
-    volunteer_count = forms.IntegerField(widget=VolunteerCountWidget)
+class EventPromoteForm(forms.ModelForm):
+    event = forms.ModelChoiceField(queryset=Event.objects.none(), required=False, widget=forms.widgets.HiddenInput)
+    
+    def __init__(self, *args, **kwargs):
+        super(EventPromoteForm, self).__init__(*args, **kwargs)
+        
+        # super gross.
+        event_lookup = self.initial['event']
+        if isinstance(event_lookup, Event):
+            event_lookup = event_lookup.pk
+        self.fields['event'].queryset = Event.objects.filter(pk=event_lookup)
     
     def clean_volunteer_count(self):
         # not very DRY but so it goes
-        self.cleaned_data['volunteer_count'] = min(250, self.cleaned_data['volunteer_count'])
+        return min(250, self.cleaned_data['volunteer_count'])
+        
+    class Meta:
+        model = EventPromotionRequest
+        exclude = ['host', 'recipients', 'status']
+        widgets = {
+            'volunteer_count': VolunteerCountWidget,
+            'message': forms.widgets.Textarea(attrs={'rows': 8})
+        }
 
 
 class EventForm(forms.ModelForm):

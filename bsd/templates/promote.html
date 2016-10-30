@@ -13,6 +13,8 @@
         <form action="" method="post">
             {% csrf_token %}
             
+            {{ form.event }}
+            
             <p>Invite nearby attendees to attend your event!</p>
                             
             {% bootstrap_field form.subject %}
