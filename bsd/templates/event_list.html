@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% load bootstrap3 tz %}
+
+
+{% block page_title %}Events{% endblock %}
+
+{% block title %}Events{% endblock %}
+
+
+{% block content %}
+
+    
+    <h3>Upcoming Events</h3>
+
+    <div class="container">
+        {% for event in event_list %}
+            <div class="row">
+                <div class="col-xs-7">
+                    <h4><a href="{% url event %}">{{ event.name }}</a></h4>
+                </div>
+                <div class="col-xs-2 col-xs-offset-1">
+                    <a href="{% url "event-edit" event.pk %}">Edit</a>
+                </div>
+                <div class="col-xs-2">
+                    <a href="{% url "event-edit" event.pk %}">Edit</a>
+                </div>
+            </div>
+        {% empty %}
+            <div class="row">
+                <div class="col-xs-12">
+                    <p class="text-muted">You do not have any upcoming events. Ready to host one? <a href="{% url "events-create" %}">Create a new event</a></p>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+
+    <h3>Past Events</h3>
+
+    <ul>
+        {% for event in past_events %}
+            <li><a href="{% url event %}">{{ event.name }}</a></li>
+        {% empty %}
+            <li>You do not have any past events.</li>
+        {% endfor %}
+    </ul>
+
+{% endblock %}
