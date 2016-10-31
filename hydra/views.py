@@ -7,6 +7,7 @@ class IndexView(TemplateView):
     template_name = 'splash.html'
 
     def get(self, request, *args, **kwargs):
+        assert False
         if request.user.is_authenticated and isinstance(request.user, Constituent):
             return redirect('events-list')
         return super(IndexView, self).get(request, *args, **kwargs)
