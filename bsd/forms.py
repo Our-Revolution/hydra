@@ -37,11 +37,11 @@ class EventForm(forms.ModelForm):
     duration = forms.IntegerField(widget=UnitsAndDurationWidget)
     creator_cons = forms.ModelChoiceField(queryset=Constituent.objects.none(), required=False, widget=forms.widgets.HiddenInput)
     
-    def clean(self):
-        cleaned_data = super(EventForm, self).clean()
-        cleaned_data['duration'] = int(cleaned_data['duration']) * int(cleaned_data['duration_unit'])
-        return cleaned_data
-    
+    def clean_duration(self):
+        # hours to minutes, if need be.
+        data = self.cleaned_data['duration']
+        data = int(data[0]) * int(data[1])
+        return data
     
     def __init__(self, *args, **kwargs):
         super(EventForm, self).__init__(*args, **kwargs)
