@@ -3,7 +3,9 @@ from django.shortcuts import render
 from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.views.generic.detail import SingleObjectMixin, SingleObjectTemplateResponseMixin
-from django.views.generic.edit import CreateView, FormView, ListView, UpdateView
+from django.views.generic.edit import CreateView, FormView, UpdateView
+from django.views.generic.list import ListView
+from .decorators import class_view_decorator
 from .forms import EventForm, EventPromoteForm
 from .models import Chapter, Event, EventType, OUR_REVOLUTION_CHAPTER_ID
 from .auth import Constituent
@@ -11,15 +13,17 @@ from hydra.models import EventPromotionRequest
 import datetime
 
 
+@class_view_decorator(login_required)
 class EventsView(ListView):
     model = Event
+    template_name = "event_list.html"
 
-    def get_queryset(self, request):
-        return Event.objects.filter(start_day__gte=datetime.date.today())
+    def get_queryset(self):
+        return Event.objects.filter(creator_cons=self.request.user, start_day__gte=datetime.date.today())
 
-    def get_context_data(self, request, *args, **kwargs):
-        context = super(EventsView, self).get_context_data(request, *args, **kwargs)
-        context['past_events'] = Event.objects.filter(start_day__lt=datetime.date.today())
+    def get_context_data(self, *args, **kwargs):
+        context = super(EventsView, self).get_context_data(*args, **kwargs)
+        context['past_events'] = Event.objects.filter(creator_cons=self.request.user, start_day__lt=datetime.date.today())
         return context
 
 

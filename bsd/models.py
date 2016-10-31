@@ -242,6 +242,9 @@ class Event(BSDModel):
     
     def __unicode__(self):
         return self.name
+        
+    def get_absolute_url(self):
+        return "https://go.ourrevolution.com/page/event/detail/canvassforourrevolution/%s" % self.event_id_obfuscated
     
     def get_api_data(self):
         return self._scrub_event_data_for_api(super(Event, self).get_api_data())
