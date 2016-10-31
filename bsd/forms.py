@@ -40,14 +40,15 @@ class EventForm(forms.ModelForm):
     
     def clean(self):
         cleaned_data = super(EventForm, self).clean()
-        cleaned_data['duration'] = int(cleaned_data['duration']) * int(cleaned_data['duration_unit'])
+        if isinstance(cleaned_data['duration'], int) and isinstance(cleaned_data['duration_unit'], int):
+            cleaned_data['duration'] = int(cleaned_data['duration']) * int(cleaned_data['duration_unit'])
         return cleaned_data
     
     def __init__(self, *args, **kwargs):
         
         
         if 'instance' in kwargs and 'initial' in kwargs:
-            if kwargs['instance'].duration > 60:
+            if hasattr(kwargs['instance'], 'duration') and kwargs['instance'].duration > 60:
                 kwargs['initial']['duration_unit'] = 60
                 kwargs['instance'].duration = kwargs['instance'].duration / kwargs['initial']['duration_unit']
             

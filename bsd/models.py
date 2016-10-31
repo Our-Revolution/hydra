@@ -177,7 +177,7 @@ class Event(BSDModel):
     start_day = models.DateField(verbose_name='Date')
     start_time = models.TimeField(verbose_name='Start Time')
     start_dt = models.DateTimeField()
-    start_tz = models.CharField(max_length=40, blank=True, null=True, verbose_name='Time Zone', choices=TIME_ZONE_CHOICES, default='America/Eastern')
+    start_tz = models.CharField(max_length=40, blank=False, null=True, verbose_name='Time Zone', choices=TIME_ZONE_CHOICES, default='America/Eastern')
     duration = models.IntegerField(blank=True, null=True)
     parent_event_id = models.IntegerField(default=0)
     venue_name = models.CharField(max_length=255, verbose_name='Venue Name')
