@@ -226,7 +226,7 @@ class Event(BSDModel):
     rsvp_require_signup = models.IntegerField(blank=True, null=True)
     rsvp_disallow_account = models.IntegerField(blank=True, null=True)
     rsvp_reason = models.TextField(blank=True, null=True)
-    rsvp_redirect_url = models.CharField(max_length=255)
+    rsvp_redirect_url = models.CharField(max_length=255, null=True, blank=True)
     is_searchable = models.IntegerField(default=1)
     flag_approval = models.IntegerField(default=0)
     chapter = models.ForeignKey(Chapter)
@@ -236,7 +236,7 @@ class Event(BSDModel):
     modified_dt = models.DateTimeField(blank=True, null=True)
     modified_app = models.CharField(max_length=128, blank=True, null=True)
     modified_user = models.CharField(max_length=128, blank=True, null=True)
-    status = models.IntegerField(default=0)
+    status = models.IntegerField(default=1)
     note = models.CharField(max_length=255, blank=True, null=True)
     objects = OurRevolutionObjectManager()
     
