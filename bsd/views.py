@@ -5,7 +5,7 @@ from django.utils.decorators import method_decorator
 from django.views.generic.detail import SingleObjectMixin, SingleObjectTemplateResponseMixin
 from django.views.generic.edit import CreateView, FormView, UpdateView
 from django.views.generic.list import ListView
-from .decorators import class_view_decorator
+from .decorators import bsd_login_required, class_view_decorator
 from .forms import EventForm, EventPromoteForm
 from .models import Chapter, Event, EventType, OUR_REVOLUTION_CHAPTER_ID
 from .auth import Constituent
@@ -13,7 +13,7 @@ from hydra.models import EventPromotionRequest
 import datetime
 
 
-@class_view_decorator(login_required)
+@class_view_decorator(bsd_login_required)
 class EventsView(ListView):
     model = Event
     template_name = "event_list.html"
@@ -26,7 +26,7 @@ class EventsView(ListView):
         context['past_events'] = Event.objects.filter(creator_cons=self.request.user, start_day__lt=datetime.date.today())
         return context
 
-
+@class_view_decorator(bsd_login_required)
 class EventCreate(CreateView):
     model = Event
     form_class = EventForm
@@ -57,14 +57,14 @@ class EventCreate(CreateView):
         
 class EventCreatorMixin(object):
     
-    @method_decorator(login_required)
+    @method_decorator(bsd_login_required)
     def dispatch(self, *args, **kwargs):
         if self.request.user.has_perm('bsd.can_edit_own_%ss' % self.model._meta.verbose_name.lower(), obj=self.get_object()):
             return super(EventCreatorMixin, self).dispatch(*args, **kwargs)
         return render(self.request, "unauthorized.html", {'object_type': self.model._meta.verbose_name.lower()}, status=401)
 
 
-
+@class_view_decorator(bsd_login_required)
 class EventEdit(EventCreatorMixin, UpdateView):
     model = Event
     form_class = EventForm
@@ -72,7 +72,7 @@ class EventEdit(EventCreatorMixin, UpdateView):
     success_url = '/events'
     
     
-
+@class_view_decorator(bsd_login_required)
 class EventPromote(EventCreatorMixin, CreateView):
     # hack for EventCreator permissions mixin
     model = Event

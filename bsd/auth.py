@@ -72,10 +72,10 @@ class Constituent(BSDModel):
     @property
     def is_staff(self):
         STAFF_EMAILS = ['jon@ourrevolution.com', 'chris@ourrevolution.com', 'kyle@ourrevolution.com']
-        return self.constituentemail_set.filter(email__in=STAFF_EMAILS).exists()
+        return self.emails.filter(email__in=STAFF_EMAILS).exists()
         
     def get_username(self):
-        return self.constituentemail_set.order_by('-is_primary').first().email
+        return self.emails.order_by('-is_primary').first().email
      
     def is_active(self):
         # could flesh out more here.

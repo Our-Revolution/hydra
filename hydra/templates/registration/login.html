@@ -1,9 +1,11 @@
-<form action="{% url 'login' %}{% if next %}?next={{ next }}{% endif %}" method="post">
-    
-    {% csrf_token %}
-    
-    {{ form.as_p }}
-    
-    
-    <button type="submit">Submit</button>
-</form>
+{% extends "base.html" %}
+
+{% load bootstrap3 %}
+
+{% block page_title %}Login | {{ block.super }}{% endblock %}
+{% block title %}Login{% endblock %}
+
+
+{% block content %}
+    {% include "registration/_login.html" %}
+{% endblock %}

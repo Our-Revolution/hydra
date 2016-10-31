@@ -1,1 +1,12 @@
-<html><body><h1 style="font-family: sans-serif;">HYDRA</h1></body></html>
+{% extends "base.html" %}
+
+{% block page_title %}Events | {{ block.super }}{% endblock %}
+
+{% block title %}Events{% endblock %}
+
+
+{% block content %}
+    <div class="col-xs-8 col-xs-offset-2">
+        <p class="lead">Welcome! Please <a href="{% url "login" %}">login</a> to get started.</p>
+    </div>
+{% endblock %}

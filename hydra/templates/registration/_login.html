@@ -1,0 +1,25 @@
+{% load bootstrap3 %}
+
+    <div class="col-xs-8 col-xs-offset-2">
+        
+        <p class="lead">Login with your Our Revolution account to get started:</p>
+        
+        {% if request.user.is_authenticated %}
+            <p><strong>Note</strong> &mdash; you are currently logged in as {{ request.user.get_username }}, but you
+                need to log in with your BSD account to continue.</p>
+        {% endif %}
+
+        <form action="{% url 'login' %}{% if next %}?next={{ next }}{% endif %}" method="post">
+            
+            {% csrf_token %}
+            
+            {% bootstrap_form form %}
+            
+            {% buttons %}
+                {% bootstrap_button "Submit" button_type="submit" button_class="btn-primary" %}
+            {% endbuttons %}
+            
+            
+        </form>
+        
+    </div>

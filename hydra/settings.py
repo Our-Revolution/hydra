@@ -112,7 +112,7 @@ DATABASE_ROUTERS = ['bsd.routers.BSDRouter']
 
 AUTHENTICATION_BACKENDS = ('django.contrib.auth.backends.ModelBackend', 'bsd.backends.BSDAuthenticationBackend',)
 
-LOGIN_URL = '/login'
+LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/'
 
 
