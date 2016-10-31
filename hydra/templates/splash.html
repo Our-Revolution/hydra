@@ -7,6 +7,6 @@
 
 {% block content %}
     <div class="col-xs-8 col-xs-offset-2">
-        <p class="lead">Welcome! Please <a href="{% url "login" %}">login</a> to get started.</p>
+        <p class="lead">Welcome! Please <a href="{% url "login" %}?next=/events">login</a> to get started.</p>
     </div>
 {% endblock %}
