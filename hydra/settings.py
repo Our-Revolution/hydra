@@ -66,8 +66,9 @@ EMAIL_BACKEND = "anymail.backends.mailgun.MailgunBackend"
 DEFAULT_FROM_EMAIL = "organizing@ourrevolution.com"
 
 
-ADMINS = [('Jon', 'jon@ourrevolution.com')]
+ADMINS = [('Jon', 'jon@ourrevolution.com'), ('Chris', 'chris@ourrevolution.com')]
 
+SERVER_EMAIL = "bugtroll@ourrevolution.com"
 
 INTERNAL_IPS = ['24.18.176.26']
 
