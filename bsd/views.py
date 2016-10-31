@@ -44,7 +44,7 @@ class EventCreate(CreateView):
             'public_phone': 1,
         }
         
-        if self.request.user.is_authenticated():
+        if self.request.user.is_authenticated:
             initial['creator_cons'] = self.request.user.pk
             initial['creator_name'] = ' '.join([self.request.user.firstname, self.request.user.lastname])
         
