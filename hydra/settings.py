@@ -24,7 +24,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = os.environ.get('SECRET_KEY', None)
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = []
 
@@ -40,13 +40,35 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     
+    'debug_toolbar',
     'bootstrap3',
     
     'bsd',
     'hydra',
 ]
 
+
+INTERNAL_IPS = ['24.18.176.26']
+
+DEBUG_TOOLBAR_CONFIG = {
+    'SHOW_TOOLBAR_CALLBACK': 'hydra.settings.LOAD_BALANCER_FRIENDLY_SHOW_TOOLBAR'    
+}
+
+
+def LOAD_BALANCER_FRIENDLY_SHOW_TOOLBAR(request):
+    
+    if request.META.get('REMOTE_ADDR', None) not in INTERNAL_IPS and request.META.get('HTTP_X_FORWARDED_FOR', None) not in INTERNAL_IPS:
+        return False
+
+    if request.is_ajax():
+        return False
+
+    return bool(DEBUG)
+
+
+
 MIDDLEWARE = [
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
