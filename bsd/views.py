@@ -50,9 +50,9 @@ class EventCreate(CreateView):
         
         return initial
 
-    def form_valid(self, form):
-        #
-        return super(EventCreate, self).form_valid(form)
+    def form_invalid(self, form):
+        print form.errors
+        return super(EventCreate, self).form_invalid(form)
         
         
 class EventCreatorMixin(object):

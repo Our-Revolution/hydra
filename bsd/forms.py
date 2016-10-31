@@ -34,16 +34,24 @@ class EventPromoteForm(forms.ModelForm):
 class EventForm(forms.ModelForm):
     host_receive_rsvp_emails = forms.ChoiceField(choices=((1, "YES, please email me when new people RSVP (recommended)"), (0, "No thanks")), widget=forms.widgets.RadioSelect)
     public_phone = forms.ChoiceField(choices=((1, "YES, make my phone number visible to people viewing your event (recommended)"), (0, "Please keep my number private")), widget=forms.widgets.RadioSelect)
-    duration = forms.IntegerField(widget=UnitsAndDurationWidget)
+    duration_unit = forms.ChoiceField(choices=Event.DURATION_MULTIPLIER)
     creator_cons = forms.ModelChoiceField(queryset=Constituent.objects.none(), required=False, widget=forms.widgets.HiddenInput)
     
-    def clean_duration(self):
-        # hours to minutes, if need be.
-        data = self.cleaned_data['duration']
-        data = int(data[0]) * int(data[1])
-        return data
+    
+    def clean(self):
+        cleaned_data = super(EventForm, self).clean()
+        cleaned_data['duration'] = int(cleaned_data['duration']) * int(cleaned_data['duration_unit'])
+        return cleaned_data
     
     def __init__(self, *args, **kwargs):
+        
+        
+        if 'instance' in kwargs and 'initial' in kwargs:
+            if kwargs['instance'].duration > 60:
+                kwargs['initial']['duration_unit'] = 60
+                kwargs['instance'].duration = kwargs['instance'].duration / kwargs['initial']['duration_unit']
+            
+        
         super(EventForm, self).__init__(*args, **kwargs)
         
         # super gross.
@@ -53,7 +61,7 @@ class EventForm(forms.ModelForm):
         self.fields['creator_cons'].queryset = Constituent.objects.filter(pk=creator_cons_lookup)
         
         # minutes to hours. 30 == arbitrary
-#         if self.instance:
+#         if self.instance and self.instance.pk:
 #             if self.fields['duration'] > 30:
 #                 self.fields['duration'].value = int(self.fields['duration'].value / 60)
 #                 self.fields['duration_unit'].value = 60
@@ -63,7 +71,7 @@ class EventForm(forms.ModelForm):
     
         # also, look into floppy and/or crispy forms
         fields = ['event_type', 'name', 'description', 'creator_name', 'creator_cons',        
-                    'start_day', 'start_time', 'duration', 'start_tz',
+                    'start_day', 'start_time', 'duration', 'duration_unit', 'start_tz',
                     'venue_name', 'venue_addr1', 'venue_addr2', 'venue_city',
                         'venue_state_cd', 'venue_zip', 'venue_country', 'venue_directions',
                     'host_receive_rsvp_emails', 'contact_phone', 'public_phone', 'capacity']
