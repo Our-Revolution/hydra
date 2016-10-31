@@ -2,7 +2,7 @@ from __future__ import unicode_literals
 from django.db import models
 from .api import BSDModel
 # from .auth import Constituent - no circular imports
-import datetime
+import datetime, localflavor.us.models
 
 
 # should be a setting, but for quick and dirty purposes..
@@ -184,9 +184,10 @@ class Event(BSDModel):
     venue_addr1 = models.CharField(max_length=255, verbose_name='Venue Address')
     venue_addr2 = models.CharField(max_length=255, blank=True, null=True, verbose_name='Venue Address #2')
     venue_city = models.CharField(max_length=64, verbose_name='Venue City')
-    venue_state_cd = models.CharField(max_length=100, verbose_name='Venue State')
+    # venue_state_cd = models.CharField(max_length=100, verbose_name='Venue State')
+    venue_state_cd = localflavor.us.models.USStateField(verbose_name='Venue State')
     venue_zip = models.CharField(max_length=16, blank=True, null=True, verbose_name='Venue Zip Code')
-    venue_country = models.CharField(max_length=2, verbose_name='Venue Country')
+    venue_country = models.CharField(max_length=2, verbose_name='Venue Country', default='US')
     venue_directions = models.TextField(blank=True, null=True, verbose_name='Directions to Venue')
     latitude = models.FloatField()
     longitude = models.FloatField()

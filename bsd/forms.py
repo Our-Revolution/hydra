@@ -55,19 +55,13 @@ class EventForm(forms.ModelForm):
         
         super(EventForm, self).__init__(*args, **kwargs)
         
-        # super gross.
+        # super gross to avoid a serious perf hit, calling out to BSD's DB
         creator_cons_lookup = self.initial['creator_cons']
         if isinstance(creator_cons_lookup, int):
             creator_cons_lookup = creator_cons_lookup.pk
         self.fields['creator_cons'].queryset = Constituent.objects.filter(pk=creator_cons_lookup)
         
-        # minutes to hours. 30 == arbitrary
-#         if self.instance and self.instance.pk:
-#             if self.fields['duration'] > 30:
-#                 self.fields['duration'].value = int(self.fields['duration'].value / 60)
-#                 self.fields['duration_unit'].value = 60
 
-    
     class Meta:
     
         # also, look into floppy and/or crispy forms
@@ -83,6 +77,7 @@ class EventForm(forms.ModelForm):
             'creator_cons': forms.widgets.HiddenInput(),
             'chapter': forms.widgets.HiddenInput(),
             'venue_directions': forms.widgets.Textarea(attrs={'rows': 3}),
+            'venue_country': forms.widgets.HiddenInput(),
             'description': forms.widgets.Textarea(attrs={'rows': 5}),
             
             # html5
