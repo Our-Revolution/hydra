@@ -70,7 +70,7 @@ ADMINS = [('Jon', 'jon@ourrevolution.com'), ('Chris', 'chris@ourrevolution.com')
 
 SERVER_EMAIL = "bugtroll@ourrevolution.com"
 
-INTERNAL_IPS = ['24.18.176.26']
+INTERNAL_IPS = ['24.18.176.26', '24.158.161.75']
 
 DEBUG_TOOLBAR_CONFIG = {
     'SHOW_TOOLBAR_CALLBACK': 'hydra.settings.LOAD_BALANCER_FRIENDLY_SHOW_TOOLBAR'    
