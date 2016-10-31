@@ -42,10 +42,31 @@ INSTALLED_APPS = [
     
     'debug_toolbar',
     'bootstrap3',
+    'anymail',
     
     'bsd',
     'hydra',
 ]
+
+
+# Mailgun
+
+MAILGUN_API_KEY = os.environ.get('MAILGUN_API_KEY', None)
+MAILGUN_API_DOMAIN = os.environ.get('MAILGUN_API_DOMAIN', None)
+MAILGUN_DOMAIN = os.environ.get('MAILGUN_DOMAIN', None)
+
+
+ANYMAIL = {
+    'MAILGUN_API_KEY': MAILGUN_API_KEY,
+    'MAILGUN_SENDER_DOMAIN': MAILGUN_API_DOMAIN
+}
+
+EMAIL_BACKEND = "anymail.backends.mailgun.MailgunBackend"
+
+DEFAULT_FROM_EMAIL = "organizing@ourrevolution.com"
+
+
+ADMINS = [('Jon', 'jon@ourrevolution.com')]
 
 
 INTERNAL_IPS = ['24.18.176.26']
@@ -178,9 +199,3 @@ STATIC_URL = '/static/'
 
 STATIC_ROOT = os.path.join(BASE_DIR, '.static')
 
-
-# Mailgun
-
-MAILGUN_API_KEY = os.environ.get('MAILGUN_API_KEY', None)
-MAILGUN_API_DOMAIN = os.environ.get('MAILGUN_API_DOMAIN', None)
-MAILGUN_DOMAIN = os.environ.get('MAILGUN_DOMAIN', None)
