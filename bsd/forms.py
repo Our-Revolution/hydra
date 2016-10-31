@@ -24,7 +24,7 @@ class EventPromoteForm(forms.ModelForm):
         
     class Meta:
         model = EventPromotionRequest
-        exclude = ['host', 'recipients', 'status']
+        fields = ['subject', 'message', 'volunteer_count', 'event']
         widgets = {
             'volunteer_count': VolunteerCountWidget,
             'message': forms.widgets.Textarea(attrs={'rows': 8})

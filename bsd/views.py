@@ -83,7 +83,7 @@ class EventPromote(EventCreatorMixin, CreateView):
     template_name = "promote.html"
     
     def form_invalid(self, form):
-        import ipdb; ipdb.set_trace()
+        print form.errors
     
     def get_initial(self, *args, **kwargs):
         event = Event.objects.get(pk=self.kwargs['pk'])
