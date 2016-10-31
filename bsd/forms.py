@@ -20,7 +20,7 @@ class EventPromoteForm(forms.ModelForm):
     
     def clean_volunteer_count(self):
         # not very DRY but so it goes
-        return min(250, self.cleaned_data['volunteer_count'])
+        return min(1000, self.cleaned_data['volunteer_count'])
         
     class Meta:
         model = EventPromotionRequest

@@ -90,7 +90,7 @@ class EventPromote(EventCreatorMixin, CreateView):
 
         return {
                     'event': event,
-                    'volunteer_count': 100 if event.capacity == 0 else event.capacity * 2,
+                    'volunteer_count': 1000 if event.capacity == 0 else event.capacity * 10,
                     'subject': "Please come to my %s event" % event.event_type.name,
                     'message': """Hello --
                     
