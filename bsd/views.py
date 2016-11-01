@@ -56,6 +56,11 @@ class EventCreate(CreateView):
         
         
 class EventCreatorMixin(object):
+
+    def get_object(self):
+        if not self._object:
+            self._object = super(EventCreatorMixin, self).get_object()
+        return self._object
     
     @method_decorator(bsd_login_required)
     def dispatch(self, *args, **kwargs):
