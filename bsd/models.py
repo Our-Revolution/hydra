@@ -246,6 +246,7 @@ class Event(BSDModel):
         return self.name
     
     def bsd_error_handle(self, error_dict):
+        print error_dict
         errors = {}
         for field, error_list in error_dict.iteritems():
             human_friendly_label = self._meta.get_field(field).verbose_name.title()
@@ -253,7 +254,8 @@ class Event(BSDModel):
                 errors[field] = ValidationError("%s is required, please check your input and try again." % human_friendly_label)
             elif 'regex' in error_list or 'string' in error_list:
                 errors[field] = ValidationError("Please check your input on %s." % human_friendly_label)
-            # todo - others?
+            else:
+                errors[field] = ValidationError("Please check your input on %s." % human_friendly_label)
         raise ValidationError(errors)
 
         
