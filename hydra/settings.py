@@ -135,7 +135,7 @@ DATABASES = {
 
     # Blue State Digital read-only replica, for majortom
     'BSD': {
-        'ENGINE': "django.contrib.gis.db.backends.mysql",
+        'ENGINE': "bsd.mysql",  # hack.
         'NAME': os.environ.get('BSD_DATABASE_NAME'),
         'USER': os.environ.get('BSD_DATABASE_USER'),
         'HOST': os.environ.get('BSD_DATABASE_HOST'),
