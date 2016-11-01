@@ -2,27 +2,41 @@
 <html>
 <head>
     <title>{% block page_title %}Our Revolution{% endblock %}</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
     {% load bootstrap3 tz %}
     {% bootstrap_css %}
     {% bootstrap_javascript %}
-    <style>
-        section{
-            padding: 1em 0 2em;
-        }
-    </style>
 </head>
 <body>
     
     <section>
         <header>
             <div class="container">
-                <div class="row">
-                    <div class="col-xs-2">
-                        <img src="https://ourrevolution.com/img/logo.svg" style="max-width: 120px;" />
-                    </div>
-                    <div class="col-xs-10"><h1>{% block title %}{% endblock %}</h1>
-                    </div>
-                </div>
+	            <div class="row">
+		            <nav class="navbar navbar-default">
+			        	<div class="container-fluid">
+				        	<div class="navbar-header">
+					        	<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#main-navbar" aria-expanded="false">
+							    	<span class="sr-only">Toggle navigation</span>
+							        <span class="icon-bar"></span>
+							        <span class="icon-bar"></span>
+							        <span class="icon-bar"></span>
+						        </button>
+							    <a class="navbar-brand" href="/">
+								    <img alt="Our Revolution" height="100%" src="https://ourrevolution.com/img/logo.svg">
+								</a>
+				        	</div>
+				        	
+				        	<div class="collapse navbar-collapse" id="main-navbar">
+						      <ul class="nav navbar-nav navbar-right">
+						        <li><a href="/event">My Events</a></li>
+					            <li><a href="/logout">Logout</a></li>
+						      </ul>
+						    </div><!-- /.navbar-collapse -->
+				        	
+			        	</div>
+		            </nav>
+	            </div>
             </div>
         </header>
     </section>
@@ -33,6 +47,13 @@
     
         <div class="container">
             <div class="row">
+
+			<div class="col-xs-12">
+	            <div class="page-header">
+		            <h1>{% block title %}{% endblock %}</h1>
+	        	</div>
+			</div>
+	            	
                 {% block content %}
                 {% endblock %}
             </div>

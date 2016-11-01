@@ -10,41 +10,57 @@
 
 {% block content %}
 
-        <div class="col-xs-8 col-xs-offset-2">
+        <div class="col-md-8 col-md-offset-2">
     
             <h3>Upcoming Events</h3>
     
-    
-            {% for event in event_list %}
-                <div class="row">
-                    <div class="col-xs-7">
-                        <h4><a href="{{ event.get_absolute_url }}">{{ event.name }}</a></h4>
-                    </div>
-                    <div class="col-xs-2 col-xs-offset-1">
-                        <a href="{% url "event-edit" event.pk %}">Edit</a>
-                    </div>
-                    <div class="col-xs-2">
-                        <a href="{% url "event-promote" event.pk %}">Promote</a>
-                    </div>
-                </div>
-            {% empty %}
+			{% if event_list %}
+	            {% for event in event_list %}
+	                <div class="list-group">
+	                    <div class="list-group-item clearfix">
+		                   	<div class="row">
+			                    <div class="col-md-8">
+			                        <h5><a href="{{ event.get_absolute_url }}">{{ event.name }}</a></h4>
+			                    </div>    
+			                        
+			                    <div class="col-md-4">
+			                        <div class="pull-right">
+				                        <a href="{% url "event-edit" event.pk %}" class="btn btn-default">Edit</a>
+				                        <a href="{% url "event-promote" event.pk %}" class="btn btn-primary">Promote</a>
+			                        </div>
+			                    </div>
+		                   	</div>
+	                    </div>
+	                </div>
+	            {% endfor %}
+	            <a href="{% url "event-create" %}" class="btn btn-primary btn-block">Create a new event</a></p>
+            {% else %}
                 <div class="row">
                     <div class="col-xs-12">
-                        <p class="text-muted">You do not have any upcoming events. Ready to host one? <a href="{% url "event-create" %}">Create a new event</a></p>
+                        <p class="text-muted">You do not have any upcoming events. Ready to host one?</p>
+                        <a href="{% url "event-create" %}" class="btn btn-primary btn-block">Create a new event</a></p>
                     </div>
-                </div>
-            {% endfor %}
+                </div>	    
+			{% endif %}
     
-    
-            <h3>Past Events</h3>
         
-            <ul>
+            {% if past_events %}
+            	<h3>Past Events</h3>
+            	 
                 {% for event in past_events %}
+                	<div class="list-group">
+	                    <div class="list-group-item clearfix">
+		                   	<div class="row">
+			                    <div class="col-md-12">
+			                        <h5><a href="{{ event.get_absolute_url }}">{{ event.name }}</a></h4>
+			                    </div>    
+		                   	</div>
+	                    </div>
+	                </div>
+                
                     <li><a href="{{ event.get_absolute_url }}">{{ event.name }}</a></li>
-                {% empty %}
-                    <li>You do not have any past events.</li>
                 {% endfor %}
-            </ul>
+			{% endif %}
             
         </div>
 

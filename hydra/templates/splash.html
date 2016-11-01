@@ -2,11 +2,10 @@
 
 {% block page_title %}Events | {{ block.super }}{% endblock %}
 
-{% block title %}Events{% endblock %}
-
-
 {% block content %}
-    <div class="col-xs-8 col-xs-offset-2">
-        <p class="lead">Welcome! Please <a href="{% url "login" %}?next=/events">login</a> to get started.</p>
-    </div>
+	<div class="jumbotron">
+		<h1>Our Revolution Events</h1>
+		<p>Create an event in your area to help push the political revolution forward.</p>
+		<p><a class="btn btn-primary btn-lg" href="{% url "login" %}?next=/events" role="button">Login</a></p>
+	</div>
 {% endblock %}
