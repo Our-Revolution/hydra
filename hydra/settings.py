@@ -12,7 +12,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = os.environ.get('SECRET_KEY', None)
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = '*'
 
@@ -35,6 +35,7 @@ INSTALLED_APPS = [
     'bootstrap3',
     'cacheops',
     'debug_toolbar',
+    'espresso',
     
     # Hydra specific
     'bsd',
@@ -44,20 +45,36 @@ INSTALLED_APPS = [
 
 # Mailgun
 
-MAILGUN_API_KEY = os.environ.get('MAILGUN_API_KEY', None)
-MAILGUN_API_DOMAIN = os.environ.get('MAILGUN_API_DOMAIN', None)
+
+MAILGUN_ACCESS_KEY = os.environ.get('MAILGUN_API_KEY', None)
+MAILGUN_SERVER_NAME = os.environ.get('MAILGUN_API_DOMAIN', None)
 MAILGUN_DOMAIN = os.environ.get('MAILGUN_DOMAIN', None)
 
 
 ANYMAIL = {
-    'MAILGUN_API_KEY': MAILGUN_API_KEY,
-    'MAILGUN_SENDER_DOMAIN': MAILGUN_API_DOMAIN
+    'MAILGUN_API_KEY': MAILGUN_ACCESS_KEY,
+    'MAILGUN_SENDER_DOMAIN': MAILGUN_SERVER_NAME
 }
-
-EMAIL_BACKEND = "anymail.backends.mailgun.MailgunBackend"
 
 DEFAULT_FROM_EMAIL = "organizing@ourrevolution.com"
 
+
+# espresso settings
+
+if DEBUG:
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+else:
+    EMAIL_BACKEND = os.environ.get('EMAIL_BACKEND', 'anymail.backends.mailgun.MailgunBackend')
+
+
+DRIP_TEMPLATES = (
+    (None, 'None'),
+    ('our_revolution_email.html', 'Our Revolution'),
+)
+
+
+# debug / email reporting settings
 
 ADMINS = [('Jon', 'jon@ourrevolution.com'), ('Chris', 'chris@ourrevolution.com')]
 
@@ -124,6 +141,9 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
             ],
+            'builtins': [
+                'espresso.templatetags.clean_spaces'
+            ]
         },
     },
 ]
@@ -160,7 +180,6 @@ DATABASES = {
     }
 
 }
-
 
 DATABASE_ROUTERS = ['bsd.routers.BSDRouter']
 

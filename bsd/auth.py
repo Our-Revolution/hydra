@@ -1,6 +1,7 @@
 from bs4 import BeautifulSoup
 from django.db import models
 from django.contrib.auth.models import PermissionsMixin
+from django.utils.functional import cached_property
 from .api import BSDModel
 from .models import Event
 
@@ -41,6 +42,13 @@ class Constituent(BSDModel):
     status = models.IntegerField()
     note = models.CharField(max_length=255, blank=True, null=True)
     is_deleted = models.IntegerField(blank=True, null=True)
+
+    @cached_property
+    def email_address(self):
+        try:
+            return self.email_addresses.order_by('is_primary').first().email
+        except:
+            return "None"
     
     def save(self, *args, **kwargs):
         
