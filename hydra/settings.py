@@ -217,3 +217,13 @@ STATIC_URL = '/static/'
 
 STATIC_ROOT = os.path.join(BASE_DIR, '.static')
 
+
+CACHEOPS_REDIS = os.environ.get('REDIS_URL', None)
+
+CACHEOPS = {
+    'bsd.EventType': {'ops': ('fetch'), 'timeout': 60*60},
+    'bsd.Constituent': {'ops': ('get', 'fetch'), 'timeout': 60*60},
+    # 'bsd.Event': {'ops': ('all,'), 'timeout': 10, 'cache_on_save': True}
+}
+
+CACHEOPS_DEGRADE_ON_FAILURE = True

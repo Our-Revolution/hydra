@@ -10,11 +10,39 @@ def production():
     env.user = 'ubuntu'
 
 
-def deploy():
+def deploy(pip_install=False, migrate=False):
+
     with cd('hydra'):
         with prefix('source $(which virtualenvwrapper.sh)'):
             with prefix('workon hydra'):
                 run('supervisorctl stop gunicorn')
                 run('git pull origin master')
+
+                if str(pip_install).lower() == 'True':
+                    run('pip install -r requirements.txt')
+
+                if str(migrate).lower() == 'True':
+                    run('./manage.py migrate')
+
                 run('supervisorctl start gunicorn')
             # todo: varnish, etc.
+
+
+def config_set(**kwargs):
+    if not kwargs:
+        print "kwargs empty! Pass in a variable you want to set"
+        print "e.g.: fab production config_set:DOUBLE_SECRET_PASSWORD=\"yolo\""
+        exit(1)
+
+    # this is going to get untenable... use with discretion!
+    with cd('/home/ubuntu/.virtualenvs/hydra/bin'):
+        for key, value in kwargs.iteritems():
+            run('echo "\nexport %s=%s" >> activate' % (key, value))
+
+    # then, restart
+    with cd('hydra'):
+        with prefix('source $(which virtualenvwrapper.sh)'):
+            with prefix('workon hydra'):
+                run('supervisorctl restart gunicorn')
+
+
