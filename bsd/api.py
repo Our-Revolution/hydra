@@ -1,5 +1,4 @@
 from django.conf import settings
-from django.core.exceptions import ValidationError
 from django.core.serializers.json import DjangoJSONEncoder
 from django.db import models
 from time import time
@@ -29,11 +28,7 @@ class BSDModel(models.Model):
         if req.status_code == 200:
             response = json.loads(req.text)
             if 'validation_errors' in response:
-                print response
-                errors = {}
-                for field, error_list in response['validation_errors'].iteritems():
-                    errors[field] = ValidationError("%s %s" % (", ".join(errors).title(), field))
-                raise ValidationError(errors)
+                self.bsd_error_handle(response['validation_errors'])
             else:
                 return self
         else:
