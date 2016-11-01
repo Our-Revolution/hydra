@@ -59,15 +59,10 @@ class EventCreate(CreateView):
             
         except BaseException, e:
             for exc in e:
-                messages.add_message(self.request, messages.ERROR, "Error -- %s" % exc[1][0])
+                messages.add_message(self.request, messages.ERROR, "Error creating your event -- %s" % exc[1][0])
                 if hasattr(form, exc[0]):
                     form.add_error(exc[0], exc[1][0])
             return super(EventCreate, self).form_invalid(form)
-    
-
-    def form_invalid(self, form):
-        print form.errors
-        return super(EventCreate, self).form_invalid(form)
         
         
 class EventCreatorMixin(object):
@@ -93,6 +88,20 @@ class EventEdit(EventCreatorMixin, UpdateView):
 
     def get_queryset(self):
         return Event.objects.select_related('creator_cons').all()
+
+
+    def form_valid(self, form):
+        try:
+            self.object = form.save()
+            messages.add_message(self.request, messages.SUCCESS, "Your event has been updated.")
+            return super(ModelFormMixin, self).form_valid(form)
+            
+        except BaseException, e:
+            for exc in e:
+                messages.add_message(self.request, messages.ERROR, "Error updating your event -- %s" % exc[1][0])
+                if hasattr(form, exc[0]):
+                    form.add_error(exc[0], exc[1][0])
+            return super(EventEdit, self).form_invalid(form)
     
     
 @class_view_decorator(bsd_login_required)
@@ -106,7 +115,11 @@ class EventPromote(EventCreatorMixin, CreateView):
     template_name = "promote.html"
     
     def form_invalid(self, form):
-        print form.errors
+        for field, errors in form.errors:
+            for error in errors:
+                messages.add_message(self.request, messages.ERROR, "Error submitting your request -- %s" % error)
+        return super(EventPromote, self).form_invalid(form)
+
     
     def get_initial(self, *args, **kwargs):
         event = Event.objects.get(pk=self.kwargs['pk'])
