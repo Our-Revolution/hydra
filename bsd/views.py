@@ -51,7 +51,7 @@ class EventCreate(CreateView):
         
         return initial
     
-    def form_valid(self, form):
+    def form_valid(self, form):      
         try:
             self.object = form.save()
             messages.add_message(self.request, messages.SUCCESS, "Your event has been created.")
@@ -63,6 +63,10 @@ class EventCreate(CreateView):
                 if hasattr(form, exc[0]):
                     form.add_error(exc[0], exc[1][0])
             return super(EventCreate, self).form_invalid(form)
+            
+    def form_invalid(self, form):
+        print form.errors
+        return super(EventCreate, self).form_invalid(form)
         
         
 class EventCreatorMixin(object):

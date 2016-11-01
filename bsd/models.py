@@ -247,6 +247,7 @@ class Event(BSDModel):
     
     def bsd_error_handle(self, error_dict):
         errors = {}
+        print error_dict
         for field, error_list in error_dict.iteritems():
             human_friendly_label = self._meta.get_field(field).verbose_name.title()
             if 'required' in error_list:
