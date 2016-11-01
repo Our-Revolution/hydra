@@ -28,6 +28,14 @@ def deploy(pip_install=False, migrate=False):
             # todo: varnish, etc.
 
 
+def restart_gunicorn():
+
+    with cd('hydra'):
+        with prefix('source $(which virtualenvwrapper.sh)'):
+            with prefix('workon hydra'):
+                run('supervisorctl restart gunicorn')
+
+
 def config_set(**kwargs):
     if not kwargs:
         print "kwargs empty! Pass in a variable you want to set"
@@ -40,9 +48,5 @@ def config_set(**kwargs):
             run('echo "\nexport %s=%s" >> activate' % (key, value))
 
     # then, restart
-    with cd('hydra'):
-        with prefix('source $(which virtualenvwrapper.sh)'):
-            with prefix('workon hydra'):
-                run('supervisorctl restart gunicorn')
-
-
+    restart_gunicorn()
+    
