@@ -18,10 +18,10 @@ def deploy(pip_install=False, migrate=False):
                 run('supervisorctl stop gunicorn')
                 run('git pull origin master')
 
-                if str(pip_install).lower() == 'True':
+                if str(pip_install).lower() == 'true':
                     run('pip install -r requirements.txt')
 
-                if str(migrate).lower() == 'True':
+                if str(migrate).lower() == 'true':
                     run('./manage.py migrate')
 
                 run('supervisorctl start gunicorn')
