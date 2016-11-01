@@ -24,7 +24,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = os.environ.get('SECRET_KEY', None)
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = '*'
 
@@ -231,4 +231,4 @@ CACHEOPS = {
     # 'bsd.Event': {'ops': ('all,'), 'timeout': 10, 'cache_on_save': True}
 }
 
-CACHEOPS_DEGRADE_ON_FAILURE = False
+CACHEOPS_DEGRADE_ON_FAILURE = True
