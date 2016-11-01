@@ -32,6 +32,8 @@ ALLOWED_HOSTS = '*'
 # Application definition
 
 INSTALLED_APPS = [
+    
+    # core Django
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -40,10 +42,13 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     
-    'debug_toolbar',
-    'bootstrap3',
+    # dev niceties
     'anymail',
+    'bootstrap3',
+    'cacheops',
+    'debug_toolbar',
     
+    # Hydra specific
     'bsd',
     'hydra',
 ]
