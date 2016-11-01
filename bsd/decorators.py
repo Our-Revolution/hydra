@@ -12,7 +12,7 @@ def bsd_login_required(function=None, redirect_field_name=REDIRECT_FIELD_NAME, l
     to the log-in page if necessary.
     """
     actual_decorator = user_passes_test(
-        lambda u: u.is_authenticated and isinstance(u, Constituent),
+        lambda u: isinstance(u, Constituent),
         login_url=login_url,
         redirect_field_name=redirect_field_name
     )
