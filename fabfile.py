@@ -47,6 +47,12 @@ def config_set(**kwargs):
         for key, value in kwargs.iteritems():
             run('echo "\nexport %s=%s" >> activate' % (key, value))
 
-    # then, restart
-    restart_gunicorn()
-    
+    with cd('hydra'):
+        with prefix('source $(which virtualenvwrapper.sh)'):
+            with prefix('workon hydra'):
+                # manually stop gunicorn
+                run('supervisorctl stop gunicorn')
+                run('cat supervisord.pid | xargs kill')
+                run('supervisord')
+                run('supervisorctl reload')
+                run('supervisorctl start gunicorn')
