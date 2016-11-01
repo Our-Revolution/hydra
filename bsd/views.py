@@ -1,9 +1,10 @@
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.views.generic.detail import SingleObjectMixin, SingleObjectTemplateResponseMixin
-from django.views.generic.edit import CreateView, FormView, UpdateView
+from django.views.generic.edit import CreateView, FormView, UpdateView, ModelFormMixin
 from django.views.generic.list import ListView
 from .decorators import bsd_login_required, class_view_decorator
 from .forms import EventForm, EventPromoteForm
@@ -49,10 +50,19 @@ class EventCreate(CreateView):
             initial['creator_name'] = ' '.join([self.request.user.firstname, self.request.user.lastname])
         
         return initial
-
-    def form_invalid(self, form):
-        print form.errors
-        return super(EventCreate, self).form_invalid(form)
+    
+    def form_valid(self, form):
+        try:
+            self.object = form.save()
+            messages.add_message(self.request, messages.SUCCESS, "Your event has been created.")
+            return super(ModelFormMixin, self).form_valid(form)
+            
+        except BaseException, e:
+            for exc in e:
+                messages.add_message(self.request, messages.ERROR, "Error creating your event -- %s" % exc[1][0])
+                if hasattr(form, exc[0]):
+                    form.add_error(exc[0], exc[1][0])
+            return super(EventCreate, self).form_invalid(form)
         
         
 class EventCreatorMixin(object):
@@ -78,6 +88,20 @@ class EventEdit(EventCreatorMixin, UpdateView):
 
     def get_queryset(self):
         return Event.objects.select_related('creator_cons').all()
+
+
+    def form_valid(self, form):
+        try:
+            self.object = form.save()
+            messages.add_message(self.request, messages.SUCCESS, "Your event has been updated.")
+            return super(ModelFormMixin, self).form_valid(form)
+            
+        except BaseException, e:
+            for exc in e:
+                messages.add_message(self.request, messages.ERROR, "Error updating your event -- %s" % exc[1][0])
+                if hasattr(form, exc[0]):
+                    form.add_error(exc[0], exc[1][0])
+            return super(EventEdit, self).form_invalid(form)
     
     
 @class_view_decorator(bsd_login_required)
@@ -91,7 +115,17 @@ class EventPromote(EventCreatorMixin, CreateView):
     template_name = "promote.html"
     
     def form_invalid(self, form):
-        print form.errors
+        for field, errors in form.errors:
+            for error in errors:
+                messages.add_message(self.request, messages.ERROR, "Error submitting your request -- %s" % error)
+        return super(EventPromote, self).form_invalid(form)
+        
+    
+    def form_valid(self, form):
+        default = super(EventPromote, self).form_valid(form)
+        messages.add_message(self.request, messages.SUCCESS, "Your request has been submitted.")
+        return default
+
     
     def get_initial(self, *args, **kwargs):
         event = Event.objects.get(pk=self.kwargs['pk'])

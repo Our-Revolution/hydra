@@ -1,4 +1,5 @@
 from __future__ import unicode_literals
+from django.core.exceptions import ValidationError
 from django.db import models
 from .api import BSDModel
 # from .auth import Constituent - no circular imports
@@ -243,6 +244,18 @@ class Event(BSDModel):
     
     def __unicode__(self):
         return self.name
+    
+    def bsd_error_handle(self, error_dict):
+        errors = {}
+        for field, error_list in error_dict.iteritems():
+            human_friendly_label = self._meta.get_field(field).verbose_name.title()
+            if 'required' in error_list:
+                errors[field] = ValidationError("%s is required, please check your input and try again." % human_friendly_label)
+            elif 'regex' in error_list or 'string' in error_list:
+                errors[field] = ValidationError("Please check your input on %s." % human_friendly_label)
+            # todo - others?
+        raise ValidationError(errors)
+
         
     def get_absolute_url(self):
         return "https://go.ourrevolution.com/page/event/detail/canvassforourrevolution/%s" % self.event_id_obfuscated
@@ -266,7 +279,6 @@ class Event(BSDModel):
 
         del data['start_day']
         
-        
         return data
     
 
@@ -276,8 +288,6 @@ class Event(BSDModel):
             path = "update_event"
         return "/event/%s" % path
 
-    def save(self, *args, **kwargs):
-        save_call = super(Event, self).save(*args, **kwargs)
 
     class Meta:
         managed = False

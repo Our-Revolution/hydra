@@ -1,3 +1,4 @@
+from django.contrib import messages
 import dj_database_url
 import os
 
@@ -228,6 +229,10 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 STATIC_ROOT = os.path.join(BASE_DIR, '.static')
+
+MESSAGE_TAGS = {
+    messages.ERROR: 'danger'
+}
 
 
 CACHEOPS_REDIS = { 'host': os.environ.get('REDIS_HOST', None), 'db': 1 }
