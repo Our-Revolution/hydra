@@ -70,6 +70,9 @@ class EventEdit(EventCreatorMixin, UpdateView):
     form_class = EventForm
     template_name = 'event_form.html'
     success_url = '/events'
+
+    def get_queryset(self):
+        return Event.objects.select_related('creator_cons').all()
     
     
 @class_view_decorator(bsd_login_required)
