@@ -18,7 +18,9 @@ class BSDRouter(object):
             if obj1._meta.app_label == "bsd" or obj2._meta.app_label == "bsd":
                 return True
             else:
-                return False
+                # return False
+                # yolo
+                return True
         return None
  
     def allow_syncdb(self, db, model):
