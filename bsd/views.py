@@ -119,6 +119,12 @@ class EventPromote(EventCreatorMixin, CreateView):
             for error in errors:
                 messages.add_message(self.request, messages.ERROR, "Error submitting your request -- %s" % error)
         return super(EventPromote, self).form_invalid(form)
+        
+    
+    def form_valid(self, form):
+        default = super(EventPromote, self).form_valid(form)
+        messages.add_message(self.request, messages.SUCCESS, "Your request has been submitted.")
+        return default
 
     
     def get_initial(self, *args, **kwargs):
