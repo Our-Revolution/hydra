@@ -2,7 +2,6 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 from django.utils import timezone
 from django.utils.decorators import method_decorator
-from django.utils.functional import cached_property
 from django.views.generic.detail import SingleObjectMixin, SingleObjectTemplateResponseMixin
 from django.views.generic.edit import CreateView, FormView, UpdateView
 from django.views.generic.list import ListView
@@ -71,10 +70,6 @@ class EventEdit(EventCreatorMixin, UpdateView):
     form_class = EventForm
     template_name = 'event_form.html'
     success_url = '/events'
-
-    @cached_property
-    def get_object(self, *args, **kwargs):
-        return super(EventEdit, self).get_object(*args, **kwargs)
     
     
 @class_view_decorator(bsd_login_required)
