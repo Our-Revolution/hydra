@@ -1,3 +1,4 @@
+from django.utils.functional import cached_property
 from .auth import Constituent
 from .models import ConstituentEmail
 
@@ -5,6 +6,7 @@ from .models import ConstituentEmail
 
 class BSDAuthenticationBackend(object):
 
+    @cached_property
     def get_user(self, cons_id):
         return Constituent.objects.get(cons_id=cons_id)
 
