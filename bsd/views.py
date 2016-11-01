@@ -58,7 +58,7 @@ class EventCreate(CreateView):
 class EventCreatorMixin(object):
 
     def get_object(self):
-        if not self._object:
+        if not hasattr(self, '_object'):
             self._object = super(EventCreatorMixin, self).get_object()
         return self._object
     
