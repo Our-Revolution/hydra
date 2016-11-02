@@ -90,14 +90,13 @@ class EventPromotionRequest(models.Model):
         print self.message
         print email_addresses
         
-        # debug measure.
-        if False:
-            requests.post("https://api.mailgun.net/v3/%s/messages" % settings.MAILGUN_API_DOMAIN,
-                            auth=("api", settings.MAILGUN_API_KEY),
-                            data={"from": "%s <%s>" % (self.sender_display_name, self.sender_email),
-                                      "to": [", ".join(email_addresses)],
-                                      "subject": self.subject,
-                                      "text": self.message})
+        # debug measure.        
+        requests.post("https://api.mailgun.net/v3/%s/messages" % settings.MAILGUN_SERVER_NAME,
+                        auth=("api", settings.MAILGUN_ACCESS_KEY),
+                        data={"from": "%s <%s>" % (self.sender_display_name, self.sender_email),
+                                  "to": [", ".join(email_addresses)],
+                                  "subject": self.subject,
+                                  "text": self.message})
 
         print "OK time to add recipients for book keeping ..."
                                   
