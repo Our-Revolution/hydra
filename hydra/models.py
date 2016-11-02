@@ -44,11 +44,14 @@ class EventPromotionRequest(models.Model):
     
     
     def _send(self, preview=None):
-        if self.sent:
-            # todo: raise something; only send once.
-            return None
 
+        # todo - this preview + sending is getting unwieldy -- need a mini refactor.
+        
         if not preview:
+
+            if self.sent:
+                # todo: raise something; only send once.
+                return None
             
             # convert event location to point
             point = Point(x=self.event.longitude, y=self.event.latitude, srid=4326)
