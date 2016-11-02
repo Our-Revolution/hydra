@@ -12,6 +12,12 @@ from bsd.models import ConstituentAddress, Event
 from .fields import CrossDatabaseForeignKey
 
 
+import logging
+
+
+logger = logging.getLogger(__name__)
+
+
 class EventPromotionRequestThrough(models.Model):
     event_promotion_request = models.ForeignKey('EventPromotionRequest')
     recipient = CrossDatabaseForeignKey(Constituent, db_constraint=False, related_name='+')
@@ -47,18 +53,18 @@ class EventPromotionRequest(models.Model):
         
         constituent_ids_to_email = []
         
-        print "excluding ..."
+        logger.debug("excluding ...")
         
         # anything > 2 weeks ago, do not email.
         constituents_to_exclude = list(EventPromotionRequestThrough.objects.filter(event_promotion_request__sent__gt=datetime.datetime.now() - datetime.timedelta(days=14)).values_list('recipient_id', flat=True))
         
         for zip_distance in [1, 2, 5, 8, 10, 25, 50]:
         
-            print "Finding zips within %s miles ..." % zip_distance
+            logger.debug("Finding zips within %s miles ..." % zip_distance)
         
             for zip in ZipCode.objects.filter(centroid__distance_lte=(point, Distance(mi=zip_distance))):
             
-                print "Found %s" % zip.zip
+                logger.debug("Found %s" % zip.zip)
 
                 candidate_constituents = Constituent.objects.filter(addresses__zip=zip.zip) \
                                 .filter(emails__isnull=False) \
@@ -67,7 +73,7 @@ class EventPromotionRequest(models.Model):
                                 .distinct() \
                                 .values_list('pk', flat=True)
                                 
-                print "Found %s addresses... " % len(candidate_constituents)
+                logger.debug("Found %s addresses... " % len(candidate_constituents))
                 
                 # add as many as we need.
                 constituent_ids_to_email += list(candidate_constituents[0:min(self.volunteer_count if len(constituent_ids_to_email) == 0 else len(constituent_ids_to_email), self.volunteer_count - len(constituent_ids_to_email))])
@@ -78,17 +84,17 @@ class EventPromotionRequest(models.Model):
             if len(constituent_ids_to_email) >= self.volunteer_count:
                 break
                 
-        print "All done, we found enough."
+        logger.debug("All done, we found enough.")
         
         constituents = Constituent.objects.filter(pk__in=constituent_ids_to_email)
         
         email_addresses = constituents.order_by('-emails__is_primary').values_list('emails__email', flat=True)
         
-        print "MAILING !!!"
+        logger.debug("MAILING !!!")
         
-        print self.subject
-        print self.message
-        print email_addresses
+        logger.debug(self.subject)
+        logger.debug(self.message)
+        logger.debug(email_addresses)
         
         # debug measure.        
         requests.post("https://api.mailgun.net/v3/%s/messages" % settings.MAILGUN_SERVER_NAME,
@@ -98,7 +104,7 @@ class EventPromotionRequest(models.Model):
                                   "subject": self.subject,
                                   "text": self.message})
 
-        print "OK time to add recipients for book keeping ..."
+        logger.debug("OK time to add recipients for book keeping ...")
                                   
         # add as recipients for log keeping
         EventPromotionRequestThrough.objects.bulk_create([
@@ -110,6 +116,7 @@ class EventPromotionRequest(models.Model):
     
 
     def save(self, *args, **kwargs):
+        logger.debug('saving')
         if not self.host_id and self.event and self.event.creator_cons:
             self.host = self.event.creator_cons
         super(EventPromotionRequest, self).save(*args, **kwargs)

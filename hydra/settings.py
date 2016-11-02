@@ -249,3 +249,28 @@ CACHEOPS_DEGRADE_ON_FAILURE = True
 if not DEBUG:
     MIDDLEWARE.remove('debug_toolbar.middleware.DebugToolbarMiddleware')
     INSTALLED_APPS.remove('debug_toolbar')
+    
+    
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'file': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': 'django-debug.log',
+        },
+    },
+    'loggers': {
+#         'django': {
+#             'handlers': ['file'],
+#             'level': 'DEBUG',
+#             'propagate': True,
+#         },
+        'hydra.models': {
+            'handlers': ['file'],
+            'level': 'DEBUG',
+            'propagate': True,
+        }
+    },
+}
