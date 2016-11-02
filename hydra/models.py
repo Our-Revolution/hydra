@@ -127,11 +127,10 @@ class EventPromotionRequest(models.Model):
         if not self.host_id and self.event and self.event.creator_cons:
             self.host = self.event.creator_cons
         super(EventPromotionRequest, self).save(*args, **kwargs)
-        if not self.sent and self.status == 'sent':
-            if kwargs.get('preview', False):
-                self._send(preview=kwargs['preview'])
-            else:
-                self._send()
+        if kwargs.get('preview', False):
+            self._send(preview=kwargs['preview'])
+        elif not self.sent and self.status == 'sent':
+            self._send()
         return self
             
             
