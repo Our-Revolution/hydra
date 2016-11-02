@@ -15,6 +15,8 @@
         <form action="" method="post">
             {% csrf_token %}
                             
+            {% bootstrap_form_errors form %}                
+                            
             <h2>Event Information</h2>
             <hr>
             <div class="row">
@@ -40,6 +42,9 @@
             <div class="row">
 	            <div class="col-md-6">
 		            {% bootstrap_field form.start_day %}
+	            </div>
+	            <div class="col-md-6">
+		            {% bootstrap_field form.start_time %}
 	            </div>
 	            <div class="col-md-6">
 		            {% bootstrap_field form.start_tz %}
@@ -100,6 +105,9 @@
 		            {% bootstrap_field form.host_receive_rsvp_emails %}
 	            </div>
             </div>
+            
+            {% bootstrap_field form.venue_country %}
+            {% bootstrap_field form.creator_cons %}
                             
             {% buttons %}
                 <button type="submit" class="btn btn-lg btn-primary btn-block">{% if object.pk %}Update My Event{% else %}Create My Event!{% endif %}</button>
