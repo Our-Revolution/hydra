@@ -12,11 +12,14 @@
         <form action="{% url 'login' %}{% if next %}?next={{ next }}{% endif %}" method="post">
             
             {% csrf_token %}
-            
-            {% bootstrap_form form %}
+
+            {% bootstrap_label "Email Address" %}
+            {% bootstrap_field form.username layout="inline" %}
+            {% bootstrap_form form exclude="username" %}
+            <small><a href="https://go.ourrevolution.com/page/user/forgot" target="_blank">Forgot Password?</a></small>
             
             {% buttons %}
-                {% bootstrap_button "Submit" button_type="submit" button_class="btn-primary btn-block" %}
+                {% bootstrap_button "Log In" button_type="submit" button_class="btn-primary btn-block mt1" %}
             {% endbuttons %}
             
             

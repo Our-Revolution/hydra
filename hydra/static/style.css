@@ -4,9 +4,53 @@ html {
 }
 
 body {
-	margin-bottom: 350px;
+	margin-bottom: 370px;
 	font-family: 'Lato', 'Helvetica Neue', sans-serif !important;
 }
+
+.table__buttons .btn {
+    margin: 5px;
+}
+
+/* Tachyons style helpers */
+
+.w-70 {
+    width: 70%;   
+}
+
+.w-30 {
+    width: 30%;
+}
+
+.mw-70 {
+    max-width: 70%;
+}
+
+.mw-300 {
+    max-width: 300px;
+}
+
+.mt1 {
+    margin-top: 1em;
+}
+
+.bottom-right {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    z-index: 9;
+}
+
+.relative {
+    position: relative;
+}
+
+/*
+.table-outer-border {
+    border: 1px solid #e7e7e7;
+    border-radius: 3px;
+}
+*/
 
 /* Footer */
 
@@ -16,6 +60,7 @@ body {
     left: 0;
     right: 0;
     height: 350px;
+    margin-top: 20px;
     background: #fafafa;
     
     display: -webkit-box;
