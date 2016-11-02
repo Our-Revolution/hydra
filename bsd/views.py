@@ -134,6 +134,11 @@ class EventPromote(EventCreatorMixin, CreateView):
     def get_initial(self, *args, **kwargs):
         event = Event.objects.get(pk=self.kwargs['pk'])
 
+        event_data = dict(event.__dict__)
+
+        if not event_data.get('creator_name', None):
+            event_data['creator_name'] = " ".join([event.creator_cons.firstname, event.creator_cons.lastname])
+
         return {
                     'event': event,
                     'volunteer_count': 1000 if event.capacity == 0 else event.capacity * 10,
@@ -144,4 +149,4 @@ I'm hoping to get more attendees at my event, %(name)s. Could you please come?
 
 Thanks!
 
-%(creator_name)s""" % dict(event.__dict__)}
+%(creator_name)s""" % event_data}
