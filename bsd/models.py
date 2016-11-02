@@ -376,3 +376,25 @@ class ConsEmailChapterSubscription(models.Model):
         managed = False
         db_table = 'cons_email_chapter_subscription'
         unique_together = (('cons_email', 'chapter'),)
+
+
+
+class ConsPhone(models.Model):
+    cons_phone_id = models.AutoField(primary_key=True)
+    cons = models.ForeignKey('Constituent')
+    cons_phone_type_id = models.IntegerField(blank=True, null=True) # todo - investigate
+    is_primary = models.IntegerField()
+    phone = models.CharField(max_length=30, blank=True, null=True)
+    isunsub = models.IntegerField(blank=True, null=True)
+    create_dt = models.DateTimeField(blank=True, null=True)
+    create_app = models.CharField(max_length=128, blank=True, null=True)
+    create_user = models.CharField(max_length=128, blank=True, null=True)
+    modified_dt = models.DateTimeField(blank=True, null=True)
+    modified_app = models.CharField(max_length=128, blank=True, null=True)
+    modified_user = models.CharField(max_length=128, blank=True, null=True)
+    status = models.IntegerField()
+    note = models.CharField(max_length=255, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'cons_phone'
