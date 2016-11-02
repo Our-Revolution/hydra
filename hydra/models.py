@@ -96,7 +96,7 @@ class EventPromotionRequest(models.Model):
             email_addresses = constituents.order_by('-emails__is_primary').values_list('emails__email', flat=True)
 
         else:
-            email_addresses = [e.trim() for e in preview.split(',')]
+            email_addresses = [e.strip() for e in preview.split(',')]
         
         logger.debug("MAILING !!!")
         
