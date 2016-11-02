@@ -18,6 +18,8 @@ def deploy(pip_install=False, migrate=False):
                 run('supervisorctl stop gunicorn')
                 run('git pull origin master')
 
+                run('./manage.py collectstatic --noinput')
+
                 if str(pip_install).lower() == 'true':
                     run('pip install -r requirements.txt')
 
