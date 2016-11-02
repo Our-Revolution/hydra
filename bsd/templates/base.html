@@ -39,7 +39,7 @@
 					        	<div class="collapse navbar-collapse" id="main-navbar">
 									<ul class="nav navbar-nav navbar-right">
 										<li><a href="/event">My Events</a></li>
-										<li><a href="/logout">Logout</a></li>
+										<li><a href="{% url 'logout' %}?next={{ request.path | urlencode }}">Logout</a></li>
 									</ul>
 							    </div><!-- /.navbar-collapse -->
 				        	{% endif %}
