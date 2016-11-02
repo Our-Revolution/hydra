@@ -8,7 +8,7 @@ from bsd.auth import Constituent
 
 
 class EventPromotionRequestAdminForm(forms.ModelForm):
-    send_preview_email_to = models.CharField(max_length=1024, help_text="Comma separated email addresses -- filling this out will ONLY send a preview.")
+    send_preview_email_to = forms.CharField(max_length=1024, help_text="Comma separated email addresses -- filling this out will ONLY send a preview.")
 
     def save_model(self, request, obj, form, change):
         save_kwargs = {}
