@@ -142,12 +142,12 @@ class DripBase(object):
         """
         from espresso.models import SentDrip
 
-        item_ids = self.get_queryset().values_list('pk', flat=True)
+        item_ids = list(self.get_queryset().values_list('pk', flat=True))
         exclude_ids = SentDrip.objects.filter(created__lt=conditional_now(),
                                                    drip=self.drip_model,
                                                    item_id__in=item_ids)\
                                            .values_list('item_id', flat=True)
-        self._queryset = self.get_queryset().exclude(pk__in=exclude_ids)
+        self._queryset = self.get_queryset().exclude(pk__in=list(exclude_ids))
 
         if count != 'all':
             self._queryset = self._queryset[0]
