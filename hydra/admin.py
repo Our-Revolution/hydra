@@ -18,6 +18,30 @@ class EventPromotionRequestAdminForm(forms.ModelForm):
             'message': admin.widgets.AdminTextareaWidget
         }
 
+    def __init__(self, *args, **kwargs):
+
+        instance = kwargs.get('instance', None)
+
+        if instance and not instance.sender_email:
+            instance.message = Template("""Hi --
+
+Our event host, {{ instance.event.creator_cons.firstname }} is hosting an event and is hoping
+to get some more attendees —— would you be able to attend?
+
+Thanks!
+
+
+---------- Forwarded message ----------
+From: {{ instance.event.creator_cons.email }}
+Subject: {{ instance.subject }}
+
+{{ instance.message }}""").render(Context({'instance': instance }))
+
+        kwargs.update(instance=instance)
+
+        super(EventPromotionRequestAdminForm, self).__init__(*args, **kwargs)
+
+
 
 @admin.register(EventPromotionRequest)
 class EventPromotionRequestAdmin(admin.ModelAdmin):
