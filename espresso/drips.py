@@ -1,4 +1,5 @@
 import functools
+import datetime
 import logging
 import operator
 import pytz
@@ -7,13 +8,6 @@ from django.conf import settings
 from django.db import models
 from django.db.models import Q
 from django.utils.module_loading import import_string
-
-try:
-    from django.utils.timezone import now as conditional_now
-except ImportError:
-    from datetime import datetime
-    conditional_now = datetime.now
-
 from espresso.messages import DripMessage
 
 
@@ -59,8 +53,7 @@ class DripBase(object):
         This allows us to override what we consider "now", making it easy
         to build timelines of who gets what when.
         """
-        return datetime.now(pytz.timezone('UTC'))
-        # return conditional_now() + self.timedelta(**self.now_shift_kwargs)
+        return datetime.datetime.now(pytz.timezone('UTC'))
 
     def timedelta(self, *a, **kw):
         """
@@ -148,7 +141,7 @@ class DripBase(object):
         from espresso.models import SentDrip
 
         item_ids = list(self.get_queryset().values_list('pk', flat=True))
-        exclude_ids = SentDrip.objects.filter(created__lt=conditional_now(),
+        exclude_ids = SentDrip.objects.filter(created__lt=datetime.datetime.now(),
                                                    drip=self.drip_model,
                                                    item_id__in=item_ids)\
                                            .values_list('item_id', flat=True)
