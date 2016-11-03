@@ -61,10 +61,10 @@ class DripAdmin(admin.ModelAdmin):
         drip.drip.send_sample(request.user.email)
         self.message_user(request, "Sent to %s" % request.user.email, level='success')
 
-    def change_view(self, request, object_id, extra_context=None):
+    def change_view(self, request, object_id, form_url='', extra_context=None):
         if '_email_to_me' in request.POST:
             self.send_sample_email(request, object_id, extra_context=extra_context)
-        return super(DripAdmin, self).change_view(request, object_id, extra_context)
+        return super(DripAdmin, self).change_view(request, object_id, form_url='', extra_context=self.build_extra_context(extra_context, object_id=object_id))
 
     def populate_target_registry(self):
         registry = []
@@ -136,10 +136,6 @@ class DripAdmin(admin.ModelAdmin):
     def add_view(self, request, extra_context=None):
         return super(DripAdmin, self).add_view(
             request, extra_context=self.build_extra_context(extra_context))
-
-    def change_view(self, request, object_id, extra_context=None):
-        return super(DripAdmin, self).change_view(
-            request, object_id, extra_context=self.build_extra_context(extra_context, object_id=object_id))
 
     def get_urls(self):
         from django.conf.urls import url
