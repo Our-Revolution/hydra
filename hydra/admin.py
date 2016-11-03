@@ -38,6 +38,8 @@ class EventPromotionRequestAdmin(admin.ModelAdmin):
     def get_object(self, request, object_id, from_field=None):
         obj = super(EventPromotionRequestAdmin, self).get_object(request, object_id)
         if obj is not None:
+            if not obj.sender_display_name:
+                obj.sender_display_name = request.user.get_full_name()
             if not obj.sender_email:
                 obj.message = Template("""Hi --
 
@@ -46,14 +48,15 @@ to get some more attendees —— would you be able to attend?
 
 Thanks!
 
+{{ obj.sender_display_name }}
+Our Revolution
+
 
 ---------- Forwarded message ----------
-From: {{ obj.event.creator_cons.email }}
+From: {{ obj.event.creator_cons.email_address }}
 Subject: {{ obj.subject }}
 
 {{ obj.message }}""").render(Context({'obj': obj }))
-            if not obj.sender_display_name:
-                obj.sender_display_name = request.user.get_full_name()
             if not obj.sender_email:
                 obj.sender_email = request.user.email
         return obj
