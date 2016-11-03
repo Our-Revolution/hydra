@@ -36,7 +36,7 @@ class EventPromotionRequestAdmin(admin.ModelAdmin):
         obj.save(**save_kwargs)
 
     def view_on_site(self, obj):
-        return obj.get_absolute_url()
+        return obj.event.get_absolute_url()
     
     def get_object(self, request, object_id, from_field=None):
         obj = super(EventPromotionRequestAdmin, self).get_object(request, object_id)
