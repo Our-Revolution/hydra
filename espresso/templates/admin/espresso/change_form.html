@@ -41,9 +41,13 @@
       $(target).parent().append(ul);
       var val = $(target).val();
 
+      if(!document.getElementById('id_target').value){
+        return;
+      }
+
       for (var i=0; i < field_data[document.getElementById('id_target').value].length; i++) {
         var item = field_data[document.getElementById('id_target').value][i];
-        if (item[0].indexOf(val) != -1) {
+        if (item[0].indexOf(val) == 0) {
           $(ul).append("<li data-field='"+item[0]+"'>"+item[0]+" ("+item[1]+")</li>");
         }
       };
