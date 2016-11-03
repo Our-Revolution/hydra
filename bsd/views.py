@@ -1,6 +1,7 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
+from django.template import Context, Template
 from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.views.generic.detail import SingleObjectMixin, SingleObjectTemplateResponseMixin
@@ -143,10 +144,13 @@ class EventPromote(EventCreatorMixin, CreateView):
                     'event': event,
                     'volunteer_count': 1000 if event.capacity == 0 else event.capacity * 10,
                     'subject': "Please come to my %s event" % event.event_type.name,
-                    'message': """Hello --
+                    'message': Template("""Hello --
                     
-I'm hoping to get more attendees at my event, %(name)s. Could you please come?
+I'm hoping to get more attendees at my event, {{ event.name }}! Can you make it? We're almost across the finish line and we need to keep up the momentum.
+
 
 Thanks!
 
-%(creator_name)s""" % event_data}
+
+{{ evnet.creator_cons.firstname }} {{ event.creator_cons.lastname }}""").render(Context({'event': event}))
+                }
