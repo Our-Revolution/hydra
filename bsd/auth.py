@@ -46,7 +46,7 @@ class Constituent(BSDModel):
     @cached_property
     def email_address(self):
         try:
-            return self.email_addresses.order_by('is_primary').first().email
+            return self.emails.order_by('is_primary').first().email
         except:
             return "None"
     
