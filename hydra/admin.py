@@ -44,6 +44,7 @@ class EventPromotionRequestAdmin(admin.ModelAdmin):
             if not obj.sender_display_name:
                 obj.sender_display_name = request.user.get_full_name()
             if not obj.sender_email:
+                obj.subject = "Fwd: " + obj.subject
                 obj.message = Template("""Hi --
 
 Our event host, {{ obj.event.creator_cons.firstname }} is hosting an event and is hoping
