@@ -22,7 +22,7 @@ class QuerySetRuleInline(admin.TabularInline):
 
 
 class DripAdmin(admin.ModelAdmin):
-    list_display = ('name', 'enabled', 'synopsis')
+    list_display = ('name', 'enabled', 'description')
     inlines = [QuerySetRuleInline]
     save_as = True
 
