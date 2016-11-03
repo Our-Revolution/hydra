@@ -262,12 +262,12 @@ LOGGING = {
         },
     },
     'loggers': {
-#         'django': {
-#             'handlers': ['file'],
-#             'level': 'DEBUG',
-#             'propagate': True,
-#         },
-        'hydra.models': {
+        'hydra': {
+            'handlers': ['file'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+        'espresso': {
             'handlers': ['file'],
             'level': 'DEBUG',
             'propagate': True,
