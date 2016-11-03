@@ -70,7 +70,7 @@ else:
 
 
 DRIP_TEMPLATES = (
-    (None, 'None'),
+    (None, 'None (Plain Text)'),
     ('our_revolution_email.html', 'Our Revolution'),
 )
 

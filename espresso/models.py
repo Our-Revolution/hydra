@@ -1,13 +1,11 @@
 from datetime import datetime, timedelta
-
-from django.db import models
-from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ValidationError
 from django.conf import settings
+from django.db import models
 from django.utils.module_loading import import_string
-from django.utils.dateparse import parse_duration
 
 from .drips import DripBase
+from .helpers import parse
 
 
 class Drip(models.Model):
@@ -22,10 +20,10 @@ class Drip(models.Model):
                                 help_text='You will have settings and user in the context.')
     template = models.CharField(max_length=64, null=True, blank=True, default=None, choices=settings.DRIP_TEMPLATES)
     target = models.CharField(max_length=128, null=True, blank=True)
-    limit = models.IntegerField(default=0)
-    ordering = models.CharField(max_length=128, null=True, blank=True)
+    limit = models.IntegerField(default=0, help_text="Leave 0 to fetch all objects.")
+    ordering = models.CharField(max_length=128, null=True, blank=True, help_text="Only used if you specify a limit. If so, by what criteria should we choose which objects make the cut?")
     enabled = models.BooleanField(default=False)
-    synopsis = models.CharField(max_length=128, blank=True, null=True)
+    description = models.CharField(max_length=1024, blank=True, null=True, help_text="A line or two about what this does, and why. Good for institutional knowledge")
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
 
@@ -146,16 +144,16 @@ class QuerySetRule(models.Model):
             field_value = now().date()
         elif self.field_value.startswith('now-'):
             field_value = self.field_value.replace('now-', '')
-            field_value = now() - parse_duration(field_value)
+            field_value = now() - parse(field_value)
         elif self.field_value.startswith('now+'):
             field_value = self.field_value.replace('now+', '')
-            field_value = now() + parse_duration(field_value)
+            field_value = now() + parse(field_value)
         elif self.field_value.startswith('today-'):
             field_value = self.field_value.replace('today-', '')
-            field_value = now().date() - parse_duration(field_value)
+            field_value = now().date() - parse(field_value)
         elif self.field_value.startswith('today+'):
             field_value = self.field_value.replace('today+', '')
-            field_value = now().date() + parse_duration(field_value)
+            field_value = now().date() + parse(field_value)
 
         # F expressions
         if self.field_value.startswith('F_'):

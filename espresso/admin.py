@@ -17,13 +17,43 @@ from espresso.utils import get_simple_fields #, get_user_model
 from espresso.messages import DripMessage
 
 
+class QuerySetRuleInlineAdminForm(forms.ModelForm):
+    
+    class Meta:
+        model = QuerySetRule
+        fields = '__all__'
+        widgets = {
+            'field_name': admin.widgets.AdminTextInputWidget(attrs={'autocomplete': "off"}),
+            'field_value': admin.widgets.AdminTextInputWidget(attrs={'autocomplete': "off"})
+        }
+
+
 class QuerySetRuleInline(admin.TabularInline):
     model = QuerySetRule
+    form = QuerySetRuleInlineAdminForm
 
 
+
+class DripAdminForm(forms.ModelForm):
+    
+    class Meta:
+        model = Drip
+        fields = '__all__'
+        widgets = {
+            'name': admin.widgets.AdminTextInputWidget(attrs={'class': 'vLargeTextField'}),
+            'from_email': admin.widgets.AdminTextInputWidget(attrs={'class': 'vLargeTextField'}),
+            'from_email_name': admin.widgets.AdminTextInputWidget(attrs={'class': 'vLargeTextField'}),
+            'subject_template': admin.widgets.AdminTextInputWidget(attrs={'class': 'vLargeTextField'}),
+            'body_html_template': admin.widgets.AdminTextareaWidget(attrs={'class': 'vLargeTextField', 'rows': 20}),
+            'description': admin.widgets.AdminTextInputWidget(attrs={'class': 'vLargeTextField'}),
+        }
+
+
+@admin.register(Drip)
 class DripAdmin(admin.ModelAdmin):
-    list_display = ('name', 'enabled', 'synopsis')
+    form = DripAdminForm
     inlines = [QuerySetRuleInline]
+    list_display = ('name', 'enabled', 'description')
     save_as = True
 
     def send_sample_email(self, request, object_id, extra_context):
@@ -128,7 +158,6 @@ class DripAdmin(admin.ModelAdmin):
             )
         ]
         return my_urls + urls
-admin.site.register(Drip, DripAdmin)
 
 
 @admin.register(SentDrip)
