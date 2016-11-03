@@ -1,6 +1,7 @@
 import functools
 import logging
 import operator
+import pytz
 
 from django.conf import settings
 from django.db import models
@@ -58,7 +59,8 @@ class DripBase(object):
         This allows us to override what we consider "now", making it easy
         to build timelines of who gets what when.
         """
-        return conditional_now() + self.timedelta(**self.now_shift_kwargs)
+        return datetime.now(pytz.timezone('UTC'))
+        # return conditional_now() + self.timedelta(**self.now_shift_kwargs)
 
     def timedelta(self, *a, **kw):
         """

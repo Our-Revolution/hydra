@@ -49,9 +49,15 @@ def add_to_elbs():
 def elb_managed(func):
     @wraps(func)
     def decorated(*args, **kwargs):
-        remove_from_elbs()
+        
+        if env.load_balancer_name:
+            remove_from_elbs()
+
         func(*args, **kwargs)
-        add_to_elbs()
+        
+        if env.load_balancer_name:
+            add_to_elbs()
+            
     return decorated
 
 
@@ -59,6 +65,14 @@ def production():
     env.load_balancer_name = ["hydra"]
     env.aws_hosts = aws_hosts(env.load_balancer_name)
     env.hosts = env.aws_hosts.keys()
+    env.forward_agent = True
+    env.key_filename = '~/.ssh/hydra.pem'
+    env.user = 'ubuntu'
+
+
+def staging():
+    env.load_balancer_name = None
+    env.hosts = ['ec2-35-162-6-125.us-west-2.compute.amazonaws.com']
     env.forward_agent = True
     env.key_filename = '~/.ssh/hydra.pem'
     env.user = 'ubuntu'
