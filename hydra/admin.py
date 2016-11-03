@@ -1,6 +1,9 @@
+# -*- coding: utf-8 -*-
+
 from django import forms
 from django.contrib import admin
 from django.db.models import Prefetch
+from django.template import Context, Template
 from .models import EventPromotionRequest, ZipCode
 from bsd.models import Event, EventType
 from bsd.auth import Constituent
