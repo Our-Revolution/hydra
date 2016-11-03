@@ -61,11 +61,10 @@ class DripAdmin(admin.ModelAdmin):
         drip.drip.send_sample(request.user.email)
         self.message_user(request, "Sent to %s" % request.user.email, level='success')
 
-    def change_view(self, request, object_id, extra_context=None):        
-        default = super(ModelAdmin, self).change_view(request, object_id, extra_context)
+    def change_view(self, request, object_id, extra_context=None):
         if '_email_to_me' in request.POST:
             self.send_sample_email(request, object_id, extra_context=extra_context)
-        return default
+        return super(DripAdmin, self).change_view(request, object_id, extra_context)
 
     def populate_target_registry(self):
         registry = []
