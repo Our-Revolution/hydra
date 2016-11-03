@@ -33,7 +33,7 @@ class EventPromotionRequest(models.Model):
     sender_display_name = models.CharField(max_length=128, null=True)
     sender_email = models.EmailField(null=True)
     subject = models.CharField(max_length=128)
-    message = models.CharField(max_length=1024)
+    message = models.CharField(max_length=2048)
     volunteer_count = models.IntegerField()
     event = CrossDatabaseForeignKey(Event, db_constraint=False)
     host = CrossDatabaseForeignKey(Constituent, db_constraint=False, related_name="event_promotion_requests")

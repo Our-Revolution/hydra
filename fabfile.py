@@ -93,7 +93,7 @@ def deploy(pip_install=False, migrate=False):
                     run('pip install -r requirements.txt')
 
                 if str(migrate).lower() == 'true':
-                    run('./manage.py migrate')
+                    run('./manage.py migrate --settings=hydra.settings_for_migrations')
 
                 run('supervisorctl start gunicorn')
                 
