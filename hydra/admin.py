@@ -21,29 +21,6 @@ class EventPromotionRequestAdminForm(forms.ModelForm):
             'message': admin.widgets.AdminTextareaWidget
         }
 
-    def __init__(self, *args, **kwargs):
-
-        instance = kwargs.get('instance', None)
-
-        if instance and not instance.sender_email:
-            instance.message = Template("""Hi --
-
-Our event host, {{ instance.event.creator_cons.firstname }} is hosting an event and is hoping
-to get some more attendees —— would you be able to attend?
-
-Thanks!
-
-
----------- Forwarded message ----------
-From: {{ instance.event.creator_cons.email }}
-Subject: {{ instance.subject }}
-
-{{ instance.message }}""").render(Context({'instance': instance }))
-
-        kwargs.update(instance=instance)
-
-        super(EventPromotionRequestAdminForm, self).__init__(*args, **kwargs)
-
 
 
 @admin.register(EventPromotionRequest)
@@ -61,6 +38,20 @@ class EventPromotionRequestAdmin(admin.ModelAdmin):
     def get_object(self, request, object_id, from_field=None):
         obj = super(EventPromotionRequestAdmin, self).get_object(request, object_id)
         if obj is not None:
+            if not obj.sender_email:
+                obj.message = Template("""Hi --
+
+Our event host, {{ obj.event.creator_cons.firstname }} is hosting an event and is hoping
+to get some more attendees —— would you be able to attend?
+
+Thanks!
+
+
+---------- Forwarded message ----------
+From: {{ obj.event.creator_cons.email }}
+Subject: {{ obj.subject }}
+
+{{ obj.message }}""").render(Context({'obj': obj }))
             if not obj.sender_display_name:
                 obj.sender_display_name = request.user.get_full_name()
             if not obj.sender_email:
