@@ -42,7 +42,7 @@ class EventPromotionRequestAdmin(admin.ModelAdmin):
         obj = super(EventPromotionRequestAdmin, self).get_object(request, object_id)
         if obj is not None:
             if not obj.sender_display_name:
-                obj.sender_display_name = request.user.get_full_name()
+                obj.sender_display_name = "Our Revolution Organizing"
             if not obj.sender_email:
                 obj.subject = "Fwd: " + obj.subject
                 obj.message = Template("""Hi --
@@ -64,7 +64,7 @@ Subject: {{ obj.subject }}
 
 {{ obj.message }}""").render(Context({'obj': obj }))
             if not obj.sender_email:
-                obj.sender_email = request.user.email
+                obj.sender_email = "organizing@ourrevolution.com"
         return obj
     
     def get_queryset(self, request):
