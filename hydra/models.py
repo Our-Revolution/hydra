@@ -103,14 +103,15 @@ class EventPromotionRequest(models.Model):
         logger.debug(self.subject)
         logger.debug(self.message)
         logger.debug(email_addresses)
+
+        for email in email_addresses:
         
-        # debug measure.        
-        requests.post("https://api.mailgun.net/v3/%s/messages" % settings.MAILGUN_SERVER_NAME,
-                        auth=("api", settings.MAILGUN_ACCESS_KEY),
-                        data={"from": "%s <%s>" % (self.sender_display_name, self.sender_email),
-                                  "to": [", ".join(email_addresses)],
-                                  "subject": self.subject,
-                                  "text": self.message})
+            requests.post("https://api.mailgun.net/v3/%s/messages" % settings.MAILGUN_SERVER_NAME,
+                            auth=("api", settings.MAILGUN_ACCESS_KEY),
+                            data={"from": "%s <%s>" % (self.sender_display_name, self.sender_email),
+                                      "to": email,
+                                      "subject": self.subject,
+                                      "text": self.message})
 
         if not preview:
 

@@ -64,7 +64,7 @@ Subject: {{ obj.subject }}
 
 {{ obj.message }}""").render(Context({'obj': obj }))
             if not obj.sender_email:
-                obj.sender_email = "organize@ourrevolution.com"
+                obj.sender_email = "organizing@ourrevolution.com"
         return obj
     
     def get_queryset(self, request):
