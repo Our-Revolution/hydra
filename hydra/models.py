@@ -5,7 +5,7 @@ from django.contrib.gis.db import models as geo_models
 from django.contrib.gis.measure import Distance
 from itertools import chain
 from localflavor.us.models import USZipCodeField
-import datetime, requests
+import datetime, json, requests
 
 from bsd.auth import Constituent
 from bsd.models import ConstituentAddress, Event
@@ -104,14 +104,17 @@ class EventPromotionRequest(models.Model):
         logger.debug(self.message)
         logger.debug(email_addresses)
 
-        for email in email_addresses:
+        recipient_variables = dict((email, {}) for email in email_addresses)
         
-            requests.post("https://api.mailgun.net/v3/%s/messages" % settings.MAILGUN_SERVER_NAME,
-                            auth=("api", settings.MAILGUN_ACCESS_KEY),
-                            data={"from": "%s <%s>" % (self.sender_display_name, self.sender_email),
-                                      "to": email,
-                                      "subject": self.subject,
-                                      "text": self.message})
+        # debug measure.        
+        requests.post("https://api.mailgun.net/v3/%s/messages" % settings.MAILGUN_SERVER_NAME,
+                        auth=("api", settings.MAILGUN_ACCESS_KEY),
+                        data={"from": "%s <%s>" % (self.sender_display_name, self.sender_email),
+                                  "to": [", ".join(email_addresses)],
+                                  "subject": self.subject,
+                                  "text": self.message,
+                                  "recipient-variables": (json.dumps(recipient_variables))
+                            })
 
         if not preview:
 
