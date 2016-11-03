@@ -34,6 +34,9 @@ class EventPromotionRequestAdmin(admin.ModelAdmin):
         if form.cleaned_data.get('send_preview_email_to', False):
             save_kwargs['preview'] = form.cleaned_data['send_preview_email_to']
         obj.save(**save_kwargs)
+
+    def view_on_site(self, obj):
+        return obj.get_absolute_url()
     
     def get_object(self, request, object_id, from_field=None):
         obj = super(EventPromotionRequestAdmin, self).get_object(request, object_id)
@@ -45,6 +48,8 @@ class EventPromotionRequestAdmin(admin.ModelAdmin):
 
 Our event host, {{ obj.event.creator_cons.firstname }} is hosting an event and is hoping
 to get some more attendees —— would you be able to attend?
+
+Learn more or RSVP here: {{ obj.event.get_absolute_url }}
 
 Thanks!
 
