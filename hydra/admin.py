@@ -29,6 +29,7 @@ class EventPromotionRequestAdmin(admin.ModelAdmin):
     list_display = ['event_name', 'event_type', 'host_name', 'submitted', 'status']
     raw_id_fields = ['event', 'host', 'recipients']
     form = EventPromotionRequestAdminForm
+    list_filter = ['status']
 
     def save_model(self, request, obj, form, change):
         save_kwargs = {}
