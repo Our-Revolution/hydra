@@ -68,7 +68,16 @@ Our Revolution
 From: {{ obj.event.creator_cons.email_address }}
 Subject: {{ obj.subject }}
 
-{{ obj.message }}""").render(Context({'obj': obj }))
+{{ obj.message }}
+
+
+----
+Paid for by Our Revolution
+(not the billionaires)
+
+603 2ND STREET NE - WASHINGTON, DC 20002
+
+Email is one of the most important tools we have to reach supporters like you, but if you’d like to, click here to unsubscribe: https://go.ourrevolution.com/page/unsubscribe/""").render(Context({'obj': obj }))
             if not obj.sender_email:
                 obj.sender_email = "organizing@ourrevolution.com"
         return obj
