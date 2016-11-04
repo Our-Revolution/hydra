@@ -2,6 +2,7 @@
 
 from django import forms
 from django.contrib import admin
+from django.contrib import messages
 from django.db.models import Prefetch
 from django.template import Context, Template
 from .models import EventPromotionRequest, ZipCode
@@ -33,7 +34,11 @@ class EventPromotionRequestAdmin(admin.ModelAdmin):
         save_kwargs = {}
         if form.cleaned_data.get('send_preview_email_to', False):
             save_kwargs['preview'] = form.cleaned_data['send_preview_email_to']
-        obj.save(**save_kwargs)
+        try:
+            obj.save(**save_kwargs)
+        except ValueError, e:
+            self.message_user(request, "Error sending out promotion blast -- %s" % e.message, level=messages.ERROR)
+
 
     def view_on_site(self, obj):
         return obj.event.get_absolute_url()

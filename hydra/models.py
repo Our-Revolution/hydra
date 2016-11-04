@@ -98,7 +98,7 @@ class EventPromotionRequest(models.Model):
             
             constituents = Constituent.objects.filter(pk__in=constituent_ids_to_email)
             
-            email_addresses = constituents.order_by('-emails__is_primary').values_list('emails__email', flat=True)
+            email_addresses = constituents.filter(emails__is_primary=1).values_list('emails__email', flat=True)[0:self.volunteer_count]
 
         else:
             email_addresses = [e.strip() for e in preview.split(',')]
@@ -121,8 +121,8 @@ class EventPromotionRequest(models.Model):
                                   "recipient-variables": (json.dumps(recipient_variables))
                             })
 
-        logger.debug(post.status_code)
-        logger.debug(post.text)
+        if post.status_code != 200:
+            raise ValueError(json.loads(post.text)['message'])
 
         if not preview:
 
