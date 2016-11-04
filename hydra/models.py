@@ -116,7 +116,8 @@ class EventPromotionRequest(models.Model):
                                   "recipient-variables": (json.dumps(recipient_variables))
                             })
 
-        logger.debug(post)
+        logger.debug(post.status_code)
+        logger.debug(post.text)
 
         if not preview:
 
