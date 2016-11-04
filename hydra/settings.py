@@ -262,7 +262,7 @@ LOGGING = {
         },
     },
     'loggers': {
-        'hydra': {
+        'bsd': {
             'handlers': ['file'],
             'level': 'DEBUG',
             'propagate': True,
@@ -271,6 +271,11 @@ LOGGING = {
             'handlers': ['file'],
             'level': 'DEBUG',
             'propagate': True,
+        },
+        'hydra': {
+            'handlers': ['file'],
+            'level': 'DEBUG',
+            'propagate': True,
         }
-    },
+    }
 }
