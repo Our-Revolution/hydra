@@ -77,6 +77,7 @@ class EventPromotionRequest(models.Model):
 
                     candidate_constituents = Constituent.objects.filter(addresses__zip=zip.zip) \
                                     .filter(emails__isnull=False) \
+                                    .filter(sendableconsgroup__isnull=False) \
                                     .exclude(pk__in=constituents_to_exclude) \
                                     .exclude(pk__in=constituent_ids_to_email) \
                                     .exclude(consemailchaptersubscription__isunsub=1) \

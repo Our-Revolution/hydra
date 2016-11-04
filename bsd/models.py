@@ -9,6 +9,8 @@ import datetime, localflavor.us.models
 # should be a setting, but for quick and dirty purposes..
 OUR_REVOLUTION_CHAPTER_ID = 2
 
+SENDABLE_CONS_GROUP_ID = 8162
+
 
 # looking for this? check auth.py, it got involved.
 # class Constituent(BSDModel):
@@ -404,3 +406,47 @@ class ConsPhone(models.Model):
     class Meta:
         managed = False
         db_table = 'cons_phone'
+
+
+# Sendable group
+class SendableConsGroup(models.Model):
+    cons = models.OneToOneField('Constituent', primary_key=True)
+    isunsub = models.IntegerField()
+
+    class Meta:
+        managed = False
+        db_table = 'cons_group_002b42d8d17e'
+
+
+
+class ConsGroup(models.Model):
+    cons_group_id = models.AutoField(primary_key=True)
+    name = models.CharField(max_length=255)
+    public_name = models.CharField(max_length=255, blank=True, null=True)
+    slug = models.CharField(max_length=32, blank=True, null=True)
+    description = models.TextField(blank=True, null=True)
+    use_global_unsub = models.IntegerField()
+    is_banned = models.IntegerField()
+    activist_code_id = models.IntegerField()
+    create_dt = models.DateTimeField(blank=True, null=True)
+    create_app = models.CharField(max_length=128, blank=True, null=True)
+    create_user = models.CharField(max_length=128, blank=True, null=True)
+    modified_dt = models.DateTimeField(blank=True, null=True)
+    modified_app = models.CharField(max_length=128, blank=True, null=True)
+    modified_user = models.CharField(max_length=128, blank=True, null=True)
+    group_type = models.CharField(max_length=32)
+    sqd = models.TextField(blank=True, null=True)
+    status = models.IntegerField()
+    members = models.IntegerField(blank=True, null=True)
+    unique_emails = models.IntegerField(blank=True, null=True)
+    unique_emails_subscribed = models.IntegerField(blank=True, null=True)
+    count_dt = models.DateTimeField(blank=True, null=True)
+    note = models.CharField(max_length=255, blank=True, null=True)
+    chapter_id = models.IntegerField()
+    base_cons_group_id = models.IntegerField(blank=True, null=True)
+    membership_resource = models.CharField(max_length=100)
+
+    class Meta:
+        managed = False
+        db_table = 'cons_group'
+        unique_together = (('name', 'chapter_id'),)
