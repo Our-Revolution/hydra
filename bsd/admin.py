@@ -15,6 +15,7 @@ class ConstituentAdmin(admin.ModelAdmin):
 @admin.register(Event)
 class EventAdmin(admin.ModelAdmin):
     list_display = ['name', 'start_day']
+    search_fields = ['name', 'venue_city']
     raw_id_fields = ['creator_cons', 'chapter']
     
     def response_change(self, request, obj):
