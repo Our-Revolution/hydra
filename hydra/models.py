@@ -106,8 +106,8 @@ class EventPromotionRequest(models.Model):
 
         recipient_variables = dict((email, {}) for email in email_addresses)
         
-        # debug measure.        
-        requests.post("https://api.mailgun.net/v3/%s/messages" % settings.MAILGUN_SERVER_NAME,
+        
+        post = requests.post("https://api.mailgun.net/v3/%s/messages" % settings.MAILGUN_SERVER_NAME,
                         auth=("api", settings.MAILGUN_ACCESS_KEY),
                         data={"from": "%s <%s>" % (self.sender_display_name, self.sender_email),
                                   "to": [", ".join(email_addresses)],
@@ -115,6 +115,8 @@ class EventPromotionRequest(models.Model):
                                   "text": self.message,
                                   "recipient-variables": (json.dumps(recipient_variables))
                             })
+
+        logger.debug(post)
 
         if not preview:
 
