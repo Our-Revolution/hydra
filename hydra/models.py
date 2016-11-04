@@ -57,6 +57,8 @@ class EventPromotionRequest(models.Model):
             point = Point(x=self.event.longitude, y=self.event.latitude, srid=4326)
             
             constituent_ids_to_email = []
+
+            zips_tried = []
             
             logger.debug("excluding ...")
             
@@ -67,13 +69,16 @@ class EventPromotionRequest(models.Model):
             
                 logger.debug("Finding zips within %s miles ..." % zip_distance)
             
-                for zip in ZipCode.objects.filter(centroid__distance_lte=(point, Distance(mi=zip_distance))):
+                for zip in ZipCode.objects.filter(centroid__distance_lte=(point, Distance(mi=zip_distance))).exclude(zip__in=zips_tried):
+
+                    zips_tried.append(zip)
                 
                     logger.debug("Found %s" % zip.zip)
 
                     candidate_constituents = Constituent.objects.filter(addresses__zip=zip.zip) \
                                     .filter(emails__isnull=False) \
                                     .exclude(pk__in=constituents_to_exclude) \
+                                    .exclude(pk__in=constituent_ids_to_email) \
                                     .exclude(consemailchaptersubscription__isunsub=1) \
                                     .distinct() \
                                     .values_list('pk', flat=True)

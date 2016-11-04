@@ -3,5 +3,5 @@ pid = 'gunicorn.pid'
 django_settings = 'hydra.settings'
 debug = True
 errorlog = 'gunicorn_error.log'
-workers = 40
+workers = 20
 max_requests = 200
