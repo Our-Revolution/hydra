@@ -47,7 +47,7 @@ class EventPromotionRequestAdmin(admin.ModelAdmin):
     def get_object(self, request, object_id, from_field=None):
         obj = super(EventPromotionRequestAdmin, self).get_object(request, object_id)
         if obj is not None:
-                first_name = request.user.first_name
+            first_name = request.user.first_name
             if not obj.sender_display_name:
                 obj.sender_display_name = "%s - Our Revolution" % first_name
             if not obj.sender_email:
