@@ -4,7 +4,7 @@ from django.contrib import admin
 
 
 class BlastEmailForm(forms.Form):
-    sender_name = forms.CharField(max_length=1024, label="Sender Name", widget=admin.widgets.AdminTextInputWidget)
+    sender_display_name = forms.CharField(max_length=1024, label="Sender Display Name", widget=admin.widgets.AdminTextInputWidget)
     sender_email = forms.EmailField(max_length=1024, label="Sender Email", widget=admin.widgets.AdminTextInputWidget)
     subject = forms.CharField(max_length=1024, widget=admin.widgets.AdminTextInputWidget)
     message = forms.CharField(max_length=4096, widget=admin.widgets.AdminTextareaWidget)
