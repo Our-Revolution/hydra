@@ -19,8 +19,8 @@ class EventPromoteForm(forms.ModelForm):
         self.fields['event'].queryset = Event.objects.filter(pk=event_lookup)
     
     def clean_volunteer_count(self):
-        # not very DRY but so it goes
-        return min(1000, self.cleaned_data['volunteer_count'])
+        self.cleaned_data['volunteer_count'] = min(1000, self.cleaned_data['volunteer_count'])
+        return self.cleaned_data['volunteer_count']
         
     class Meta:
         model = EventPromotionRequest
