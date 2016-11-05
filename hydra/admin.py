@@ -35,7 +35,7 @@ class EventPromotionRequestAdmin(admin.ModelAdmin):
     list_filter = ['status']
 
     def event_date(self, obj):
-        return obj.event.start_dt.astimezone(timezone(obj.event.start_tz))
+        return obj.event.start_dt.astimezone(timezone(obj.event.start_tz)).strftime("%a, %b%e, %l:%M%P %Z")
 
     def save_model(self, request, obj, form, change):
         save_kwargs = {}
