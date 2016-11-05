@@ -42,8 +42,8 @@ class EventPromotionRequest(models.Model):
     sent = models.DateTimeField(null=True, blank=True)
     recipients = models.ManyToManyField(Constituent, through="EventPromotionRequestThrough", related_name="event_promotions")
 
-
-    def _send_approved_emails(self):
+    @staticmethod
+    def _send_approved_emails():
 
         reqs = EventPromotionRequest.objects.filter(status='approved')
 
