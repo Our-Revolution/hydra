@@ -54,7 +54,7 @@ class EventPromotionRequestAdmin(admin.ModelAdmin):
                 obj.subject = "Fwd: " + obj.subject
                 obj.message = Template("""Hi --
 
-Our event host, {{ obj.event.creator_cons.firstname }} is hosting an event and is hoping
+Your neighbor {{ obj.event.creator_cons.firstname }} is hosting an event and is hoping
 to get some more attendees —— would you be able to attend?
 
 Learn more or RSVP here: {{ obj.event.get_absolute_url }}
