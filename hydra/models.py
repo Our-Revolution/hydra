@@ -62,6 +62,11 @@ class EventPromotionRequest(models.Model):
                                   "text": self.message,
                                   "recipient-variables": (json.dumps(recipient_variables))
                             })
+
+        if post.status_code != 200:
+            raise ValueError(json.loads(post.text)['message'])
+
+        return post
     
     
     def _send(self):
@@ -82,17 +87,17 @@ class EventPromotionRequest(models.Model):
         # anything > 2 weeks ago, do not email.
         constituents_to_exclude = list(EventPromotionRequestThrough.objects.filter(event_promotion_request__sent__gt=datetime.datetime.now() - datetime.timedelta(days=14)).values_list('recipient_id', flat=True))
         
-        for zip_distance in [1, 2, 5, 8, 10, 25, 50]:
+        for zip_distance in [1, 2, 5, 8, 10, 15]:
         
             logger.debug("Finding zips within %s miles ..." % zip_distance)
         
-            for zip in ZipCode.objects.filter(centroid__distance_lte=(point, Distance(mi=zip_distance))).exclude(zip__in=zips_tried):
+            for zipcode in ZipCode.objects.filter(centroid__distance_lte=(point, Distance(mi=zip_distance))).exclude(zip__in=zips_tried):
 
-                zips_tried.append(zip)
+                zips_tried.append(zipcode.zip)
             
-                logger.debug("Found %s" % zip.zip)
+                logger.debug("Found %s" % zipcode.zip)
 
-                candidate_constituents = Constituent.objects.filter(addresses__zip=zip.zip) \
+                candidate_constituents = Constituent.objects.filter(addresses__zip=zipcode.zip) \
                                 .filter(emails__isnull=False) \
                                 .filter(sendableconsgroup__isnull=False) \
                                 .exclude(pk__in=constituents_to_exclude) \
@@ -124,10 +129,7 @@ class EventPromotionRequest(models.Model):
         logger.debug(self.message)
         logger.debug(email_addresses)
 
-        self._do_send_to_recipients(email_addresses=email_addresses)
-
-        if post.status_code != 200:
-            raise ValueError(json.loads(post.text)['message'])
+        post = self._do_send_to_recipients(email_addresses=email_addresses)
 
         logger.debug("OK time to add recipients for book keeping ...")
                                   
