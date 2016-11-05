@@ -72,7 +72,6 @@ Our Revolution
 
 
 ---------- Forwarded message ----------
-From: {{ obj.event.creator_cons.email_address }}
 Subject: {{ obj.subject }}
 
 {{ obj.message }}
