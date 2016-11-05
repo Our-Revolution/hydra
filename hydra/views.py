@@ -57,6 +57,8 @@ Email is one of the most important tools we have to reach supporters like you, b
 
         MAX = 1000
 
+        print len(email_addresses)
+
         if len(email_addresses) > MAX:
 
             page = 0
@@ -66,7 +68,9 @@ Email is one of the most important tools we have to reach supporters like you, b
                 email_addresses_batch = email_addresses[page*MAX:MAX]
                 recipient_variables_batch = dict((email, {}) for email in email_addresses_batch)
 
-                print "Sending to:"
+                print page*MAX
+
+                print "Sending page %s to:" % page
                 print email_addresses_batch
 
                 # post = requests.post("https://api.mailgun.net/v3/%s/messages" % settings.MAILGUN_SERVER_NAME,
