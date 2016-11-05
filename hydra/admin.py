@@ -5,9 +5,12 @@ from django.contrib import admin
 from django.contrib import messages
 from django.db.models import Prefetch
 from django.template import Context, Template
+from pytz import timezone
+
 from .models import EventPromotionRequest, ZipCode
 from bsd.models import Event, EventType
 from bsd.auth import Constituent
+
 
 
 
@@ -26,10 +29,13 @@ class EventPromotionRequestAdminForm(forms.ModelForm):
 
 @admin.register(EventPromotionRequest)
 class EventPromotionRequestAdmin(admin.ModelAdmin):
-    list_display = ['event_name', 'event_type', 'host_name', 'submitted', 'status']
+    list_display = ['event_name', 'event_date', 'host_name', 'submitted', 'status']
     raw_id_fields = ['event', 'host', 'recipients']
     form = EventPromotionRequestAdminForm
     list_filter = ['status']
+
+    def event_date(self, obj):
+        return obj.event.start_dt.astimezone(timezone(obj.event.start_tz))
 
     def save_model(self, request, obj, form, change):
         save_kwargs = {}
