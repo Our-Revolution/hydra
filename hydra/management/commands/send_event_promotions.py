@@ -1,4 +1,4 @@
-from django.core.management.bse import BaseCommand, CommandError
+from django.core.management.base import BaseCommand, CommandError
 from hydra.models import EventPromotionRequest
 
 
