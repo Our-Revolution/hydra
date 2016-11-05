@@ -47,8 +47,9 @@ class EventPromotionRequestAdmin(admin.ModelAdmin):
     def get_object(self, request, object_id, from_field=None):
         obj = super(EventPromotionRequestAdmin, self).get_object(request, object_id)
         if obj is not None:
+                first_name = request.user.first_name
             if not obj.sender_display_name:
-                obj.sender_display_name = "Our Revolution Organizing"
+                obj.sender_display_name = "%s - Our Revolution" % first_name
             if not obj.sender_email:
                 obj.subject = "Fwd: " + obj.subject
                 obj.message = Template("""Hi --
@@ -60,7 +61,7 @@ Learn more or RSVP here: {{ obj.event.get_absolute_url }}
 
 Thanks!
 
-{{ obj.sender_display_name }}
+{{ first_name }}
 Our Revolution
 
 
@@ -77,7 +78,7 @@ Paid for by Our Revolution
 
 603 2ND STREET NE - WASHINGTON, DC 20002
 
-Email is one of the most important tools we have to reach supporters like you, but if you’d like to, click here to unsubscribe: https://go.ourrevolution.com/page/unsubscribe/""").render(Context({'obj': obj }))
+Email is one of the most important tools we have to reach supporters like you, but if you’d like to, click here to unsubscribe: https://go.ourrevolution.com/page/unsubscribe/""").render(Context({'obj': obj, 'first_name': first_name }))
             if not obj.sender_email:
                 obj.sender_email = "organizing@ourrevolution.com"
         return obj

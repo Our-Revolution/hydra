@@ -41,77 +41,18 @@ class EventPromotionRequest(models.Model):
     submitted = models.DateTimeField(null=True, blank=True, auto_now_add=True)
     sent = models.DateTimeField(null=True, blank=True)
     recipients = models.ManyToManyField(Constituent, through="EventPromotionRequestThrough", related_name="event_promotions")
-    
-    
-    def _send(self, preview=None):
 
-        # todo - this preview + sending is getting unwieldy -- need a mini refactor.
-        
-        if not preview:
 
-            if self.sent:
-                # todo: raise something; only send once.
-                return None
-            
-            # convert event location to point
-            point = Point(x=self.event.longitude, y=self.event.latitude, srid=4326)
-            
-            constituent_ids_to_email = []
+    def _send_approved_emails(self):
 
-            zips_tried = []
-            
-            logger.debug("excluding ...")
-            
-            # anything > 2 weeks ago, do not email.
-            constituents_to_exclude = list(EventPromotionRequestThrough.objects.filter(event_promotion_request__sent__gt=datetime.datetime.now() - datetime.timedelta(days=14)).values_list('recipient_id', flat=True))
-            
-            for zip_distance in [1, 2, 5, 8, 10, 25, 50]:
-            
-                logger.debug("Finding zips within %s miles ..." % zip_distance)
-            
-                for zip in ZipCode.objects.filter(centroid__distance_lte=(point, Distance(mi=zip_distance))).exclude(zip__in=zips_tried):
+        reqs = EventPromotionRequest.objects.filter(status='approved')
 
-                    zips_tried.append(zip)
-                
-                    logger.debug("Found %s" % zip.zip)
+        for req in reqs:
+            req._send()
 
-                    candidate_constituents = Constituent.objects.filter(addresses__zip=zip.zip) \
-                                    .filter(emails__isnull=False) \
-                                    .filter(sendableconsgroup__isnull=False) \
-                                    .exclude(pk__in=constituents_to_exclude) \
-                                    .exclude(pk__in=constituent_ids_to_email) \
-                                    .exclude(consemailchaptersubscription__isunsub=1) \
-                                    .distinct() \
-                                    .values_list('pk', flat=True)
-                                    
-                    logger.debug("Found %s addresses... " % len(candidate_constituents))
-                    
-                    # add as many as we need.
-                    constituent_ids_to_email += list(candidate_constituents[0:min(self.volunteer_count if len(constituent_ids_to_email) == 0 else len(constituent_ids_to_email), self.volunteer_count - len(constituent_ids_to_email))])
-                    
-                    if len(constituent_ids_to_email) >= self.volunteer_count:
-                        break
-                        
-                if len(constituent_ids_to_email) >= self.volunteer_count:
-                    break
-                    
-            logger.debug("All done, we found enough.")
-            
-            constituents = Constituent.objects.filter(pk__in=constituent_ids_to_email)
-            
-            email_addresses = constituents.filter(emails__is_primary=1).values_list('emails__email', flat=True)[0:self.volunteer_count]
-
-        else:
-            email_addresses = [e.strip() for e in preview.split(',')]
-        
-        logger.debug("MAILING !!!")
-        
-        logger.debug(self.subject)
-        logger.debug(self.message)
-        logger.debug(email_addresses)
+    def _do_send_to_recipients(self, email_addresses):
 
         recipient_variables = dict((email, {}) for email in email_addresses)
-        
         
         post = requests.post("https://api.mailgun.net/v3/%s/messages" % settings.MAILGUN_SERVER_NAME,
                         auth=("api", settings.MAILGUN_ACCESS_KEY),
@@ -121,21 +62,83 @@ class EventPromotionRequest(models.Model):
                                   "text": self.message,
                                   "recipient-variables": (json.dumps(recipient_variables))
                             })
+    
+    
+    def _send(self):
+
+        if self.sent or self.status == 'sent':
+            # todo: raise something; only send once.
+            return None
+        
+        # convert event location to point
+        point = Point(x=self.event.longitude, y=self.event.latitude, srid=4326)
+        
+        constituent_ids_to_email = []
+
+        zips_tried = []
+        
+        logger.debug("excluding ...")
+        
+        # anything > 2 weeks ago, do not email.
+        constituents_to_exclude = list(EventPromotionRequestThrough.objects.filter(event_promotion_request__sent__gt=datetime.datetime.now() - datetime.timedelta(days=14)).values_list('recipient_id', flat=True))
+        
+        for zip_distance in [1, 2, 5, 8, 10, 25, 50]:
+        
+            logger.debug("Finding zips within %s miles ..." % zip_distance)
+        
+            for zip in ZipCode.objects.filter(centroid__distance_lte=(point, Distance(mi=zip_distance))).exclude(zip__in=zips_tried):
+
+                zips_tried.append(zip)
+            
+                logger.debug("Found %s" % zip.zip)
+
+                candidate_constituents = Constituent.objects.filter(addresses__zip=zip.zip) \
+                                .filter(emails__isnull=False) \
+                                .filter(sendableconsgroup__isnull=False) \
+                                .exclude(pk__in=constituents_to_exclude) \
+                                .exclude(pk__in=constituent_ids_to_email) \
+                                .exclude(consemailchaptersubscription__isunsub=1) \
+                                .distinct() \
+                                .values_list('pk', flat=True)
+                                
+                logger.debug("Found %s addresses... " % len(candidate_constituents))
+                
+                # add as many as we need.
+                constituent_ids_to_email += list(candidate_constituents[0:min(self.volunteer_count if len(constituent_ids_to_email) == 0 else len(constituent_ids_to_email), self.volunteer_count - len(constituent_ids_to_email))])
+                
+                if len(constituent_ids_to_email) >= self.volunteer_count:
+                    break
+                    
+            if len(constituent_ids_to_email) >= self.volunteer_count:
+                break
+                
+        logger.debug("All done, we found enough.")
+        
+        constituents = Constituent.objects.filter(pk__in=constituent_ids_to_email)
+        
+        email_addresses = constituents.filter(emails__is_primary=1).values_list('emails__email', flat=True)[0:self.volunteer_count]
+        
+        logger.debug("MAILING !!!")
+        
+        logger.debug(self.subject)
+        logger.debug(self.message)
+        logger.debug(email_addresses)
+
+        self._do_send_to_recipients(email_addresses)
 
         if post.status_code != 200:
             raise ValueError(json.loads(post.text)['message'])
 
-        if not preview:
-
-            logger.debug("OK time to add recipients for book keeping ...")
-                                      
-            # add as recipients for log keeping
-            EventPromotionRequestThrough.objects.bulk_create([
-                EventPromotionRequestThrough(event_promotion_request_id=self.pk, recipient_id=recipient) for recipient in constituents.values_list('pk', flat=True)
-            ])
-                
-            self.sent = datetime.datetime.now()
-            self.save()
+        logger.debug("OK time to add recipients for book keeping ...")
+                                  
+        # add as recipients for log keeping
+        EventPromotionRequestThrough.objects.bulk_create([
+            EventPromotionRequestThrough(event_promotion_request_id=self.pk, recipient_id=recipient) for recipient in constituents.values_list('pk', flat=True)
+        ])
+        
+        self.status = 'sent'
+        self.sent = datetime.datetime.now()
+        self.save()
     
 
     def save(self, *args, **kwargs):
@@ -149,10 +152,8 @@ class EventPromotionRequest(models.Model):
         super(EventPromotionRequest, self).save(*args, **kwargs)
         
         if preview:
-            self._send(preview=preview)
-
-        elif not self.sent and self.status == 'sent':
-            self._send()
+            emails = [e.strip() for e in preview.split(',')]
+            self._do_send_to_recipients(preview=emails)
         
         return self
             
