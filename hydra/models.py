@@ -124,7 +124,7 @@ class EventPromotionRequest(models.Model):
         logger.debug(self.message)
         logger.debug(email_addresses)
 
-        self._do_send_to_recipients(email_addresses)
+        self._do_send_to_recipients(email_addresses=email_addresses)
 
         if post.status_code != 200:
             raise ValueError(json.loads(post.text)['message'])
@@ -153,7 +153,7 @@ class EventPromotionRequest(models.Model):
         
         if preview:
             emails = [e.strip() for e in preview.split(',')]
-            self._do_send_to_recipients(preview=emails)
+            self._do_send_to_recipients(email_addresses=emails)
         
         return self
             
