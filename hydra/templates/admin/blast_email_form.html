@@ -1,0 +1,65 @@
+{% extends "admin/base_site.html" %}
+
+{% load i18n static %}
+
+{% block extrastyle %}{{ block.super }}<link rel="stylesheet" type="text/css" href="{% static "admin/css/forms.css" %}" />{% endblock %}
+
+{% block branding %}
+<h1 id="site-name"><a href="{% url 'admin:index' %}">Hydra Administration</a></h1>
+{% endblock %}
+
+{% block breadcrumbs %}
+    <div class="breadcrumbs">
+        <a href="{% url 'admin:index' %}">{% trans 'Home' %}</a>
+        {% if title %} &rsaquo; {{ title }}{% endif %}
+    </div>
+{% endblock %}
+
+
+
+{% block content %}
+    <form action="" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div>
+            <fieldset class="module aligned">
+                {% for field in form.visible_fields %}
+                    <div class="form-row field-{{ field.id_for_label }}">
+                        <div>
+                            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                            {{ field }}   
+                            {% if field.name == 'recipients_csv' %}             
+                                <p class="help" id="recipients_help_block">Ready for a file.</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endfor %}
+                <div class="submit-row">
+                    <input type="submit" value="Send" class="default" name="_save" />
+                </div>
+            </fieldset>
+        </div>
+    </form>
+
+
+    <script src="{% static "js/papaparse.min.js" %}"></script>
+    <script>
+        document.querySelector('#id_recipients_csv').addEventListener('change', function(e){
+            Papa.parse(e.target.files[0], {
+                complete: function(results) {
+                    console.log(results);
+                    var row = results.data[0];
+                    for(var a in results.meta.fields){
+                        if(results.meta.fields.hasOwnProperty(a) && row[results.meta.fields[a]].indexOf('@') != -1){
+                            document.querySelector('#id_email_field').value = results.meta.fields[a];
+                            break;
+                        }
+                    }
+
+                    document.querySelector('#recipients_help_block').innerHTML = "Found " + results.data.length + " rows."
+                },
+                header: true
+            });
+        });
+    </script>
+
+{% endblock %}

@@ -7,6 +7,7 @@ import debug_toolbar
 urlpatterns = [
     url(r'^$', views.IndexView.as_view(), name='index'),
     url(r'^admin/', admin.site.urls),
+    url(r'^admin/blast-email', views.BlastEmail.as_view(), name='blast-email'),
     url(r'', include('bsd.urls')),
     url('^', include('django.contrib.auth.urls')),
 ]
