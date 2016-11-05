@@ -151,5 +151,5 @@ I'm hoping to get more attendees at my event, {{ event.name }}! Can you make it?
 Thanks!
 
 
-{{ event.creator_cons.firstname }} {{ event.creator_cons.lastname }}""").render(Context({'event': event}))
+{{ event.creator_cons.firstname }}""").render(Context({'event': event}))
                 }

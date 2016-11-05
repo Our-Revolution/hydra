@@ -5,9 +5,12 @@ from django.contrib import admin
 from django.contrib import messages
 from django.db.models import Prefetch
 from django.template import Context, Template
+from pytz import timezone
+
 from .models import EventPromotionRequest, ZipCode
 from bsd.models import Event, EventType
 from bsd.auth import Constituent
+
 
 
 
@@ -26,10 +29,13 @@ class EventPromotionRequestAdminForm(forms.ModelForm):
 
 @admin.register(EventPromotionRequest)
 class EventPromotionRequestAdmin(admin.ModelAdmin):
-    list_display = ['event_name', 'event_type', 'host_name', 'submitted', 'status']
+    list_display = ['event_name', 'event_date', 'host_name', 'submitted', 'status']
     raw_id_fields = ['event', 'host', 'recipients']
     form = EventPromotionRequestAdminForm
     list_filter = ['status']
+
+    def event_date(self, obj):
+        return obj.event.start_dt.astimezone(timezone(obj.event.start_tz)).strftime("%a, %b%e, %l:%M%P %Z")
 
     def save_model(self, request, obj, form, change):
         save_kwargs = {}
@@ -47,20 +53,21 @@ class EventPromotionRequestAdmin(admin.ModelAdmin):
     def get_object(self, request, object_id, from_field=None):
         obj = super(EventPromotionRequestAdmin, self).get_object(request, object_id)
         if obj is not None:
+            first_name = request.user.first_name
             if not obj.sender_display_name:
-                obj.sender_display_name = "Our Revolution Organizing"
+                obj.sender_display_name = "%s - Our Revolution" % first_name
             if not obj.sender_email:
                 obj.subject = "Fwd: " + obj.subject
                 obj.message = Template("""Hi --
 
-Our event host, {{ obj.event.creator_cons.firstname }} is hosting an event and is hoping
+Your neighbor {{ obj.event.creator_cons.firstname }} is hosting an event and is hoping
 to get some more attendees —— would you be able to attend?
 
 Learn more or RSVP here: {{ obj.event.get_absolute_url }}
 
 Thanks!
 
-{{ obj.sender_display_name }}
+{{ first_name }}
 Our Revolution
 
 
@@ -77,7 +84,7 @@ Paid for by Our Revolution
 
 603 2ND STREET NE - WASHINGTON, DC 20002
 
-Email is one of the most important tools we have to reach supporters like you, but if you’d like to, click here to unsubscribe: https://go.ourrevolution.com/page/unsubscribe/""").render(Context({'obj': obj }))
+Email is one of the most important tools we have to reach supporters like you, but if you’d like to, click here to unsubscribe: https://go.ourrevolution.com/page/unsubscribe/""").render(Context({'obj': obj, 'first_name': first_name }))
             if not obj.sender_email:
                 obj.sender_email = "organizing@ourrevolution.com"
         return obj
