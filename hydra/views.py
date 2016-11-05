@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.contrib import messages
 from django.contrib.admin.views.decorators import staff_member_required
 from django.shortcuts import redirect
 from django.views.generic.base import TemplateView
@@ -57,7 +58,7 @@ Email is one of the most important tools we have to reach supporters like you, b
 
         MAX = 1000
 
-        print len(email_addresses)
+        # print len(email_addresses)
 
         if len(email_addresses) > MAX:
 
@@ -65,25 +66,25 @@ Email is one of the most important tools we have to reach supporters like you, b
 
             while True:
 
-                email_addresses_batch = email_addresses[page*MAX:MAX]
+                email_addresses_batch = email_addresses[page*MAX:(page+1)*MAX]
                 recipient_variables_batch = dict((email, {}) for email in email_addresses_batch)
 
-                print page*MAX
+                # print page*MAX
 
-                print "Sending page %s to:" % page
-                print email_addresses_batch
+                # print "Sending page %s to:" % page
+                # print email_addresses_batch
 
-                # post = requests.post("https://api.mailgun.net/v3/%s/messages" % settings.MAILGUN_SERVER_NAME,
-                #                 auth=("api", settings.MAILGUN_ACCESS_KEY),
-                #                 data={"from": "%s <%s>" % (self.request.POST['sender_display_name'], self.request.POST['sender_email']),
-                #                           "to": [", ".join(email_addresses_batch)],
-                #                           "subject": self.request.POST['subject'],
-                #                           "text": self.request.POST['message'],
-                #                           "recipient-variables": (json.dumps(recipient_variables_batch))
-                #                     })
+                post = requests.post("https://api.mailgun.net/v3/%s/messages" % settings.MAILGUN_SERVER_NAME,
+                                auth=("api", settings.MAILGUN_ACCESS_KEY),
+                                data={"from": "%s <%s>" % (self.request.POST['sender_display_name'], self.request.POST['sender_email']),
+                                          "to": [", ".join(email_addresses_batch)],
+                                          "subject": self.request.POST['subject'],
+                                          "text": self.request.POST['message'],
+                                          "recipient-variables": (json.dumps(recipient_variables_batch))
+                                    })
 
-                # if post.status_code != 200:
-                #     raise ValueError(json.loads(post.text)['message'])
+                if post.status_code != 200:
+                    raise ValueError(json.loads(post.text)['message'])
 
                 page += 1
 
@@ -92,22 +93,20 @@ Email is one of the most important tools we have to reach supporters like you, b
 
         else:
 
-            print "Sending to:"
-            print email_addresses
+            post = requests.post("https://api.mailgun.net/v3/%s/messages" % settings.MAILGUN_SERVER_NAME,
+                            auth=("api", settings.MAILGUN_ACCESS_KEY),
+                            data={"from": "%s <%s>" % (self.request.POST['sender_display_name'], self.request.POST['sender_email']),
+                                      "to": [", ".join(email_addresses)],
+                                      "subject": self.request.POST['subject'],
+                                      "text": self.request.POST['message'],
+                                      "recipient-variables": (json.dumps(recipient_variables))
+                                })
 
-            # post = requests.post("https://api.mailgun.net/v3/%s/messages" % settings.MAILGUN_SERVER_NAME,
-            #                 auth=("api", settings.MAILGUN_ACCESS_KEY),
-            #                 data={"from": "%s <%s>" % (self.request.POST['sender_display_name'], self.request.POST['sender_email']),
-            #                           "to": [", ".join(email_addresses)],
-            #                           "subject": self.request.POST['subject'],
-            #                           "text": self.request.POST['message'],
-            #                           "recipient-variables": (json.dumps(recipient_variables))
-            #                     })
+            if post.status_code != 200:
+                raise ValueError(json.loads(post.text)['message'])
 
-            # if post.status_code != 200:
-            #     raise ValueError(json.loads(post.text)['message'])
-
-        # todo - success / error messages
+        # success / error handle
+        messages.success(self.request, "Sent %s to %s recipients." % (self.request.POST['subject'], len(email_addresses)))
 
         return super(BlastEmail, self).form_valid(form)
 
