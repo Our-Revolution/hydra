@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.db import models
+from django.db.models import Count
 from django.contrib.gis.geos import Point
 from django.contrib.gis.db import models as geo_models 
 from django.contrib.gis.measure import Distance
@@ -85,7 +86,7 @@ class EventPromotionRequest(models.Model):
         logger.debug("excluding ...")
         
         # anything > 2 weeks ago, do not email.
-        constituents_to_exclude = list(EventPromotionRequestThrough.objects.filter(event_promotion_request__sent__gt=datetime.datetime.now() - datetime.timedelta(days=14)).values_list('recipient_id', flat=True))
+        constituents_to_exclude = list(EventPromotionRequestThrough.objects.filter(event_promotion_request__sent__gt=datetime.datetime.now() - datetime.timedelta(days=14)).annotate(req_last_two_weeks=Count('event_promotion_request')).filter(req_last_two_weeks__gt=2).values_list('recipient_id', flat=True))
         
         for zip_distance in [1, 2, 5, 8, 10, 15]:
         
@@ -129,7 +130,10 @@ class EventPromotionRequest(models.Model):
         logger.debug(self.message)
         logger.debug(email_addresses)
 
-        post = self._do_send_to_recipients(email_addresses=email_addresses)
+        # empty? keep moving.
+        if email_addresses:
+
+            post = self._do_send_to_recipients(email_addresses=email_addresses)
 
         logger.debug("OK time to add recipients for book keeping ...")
                                   
