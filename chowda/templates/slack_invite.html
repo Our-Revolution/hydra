@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% load bootstrap3 %}
+
+{% block content %}
+
+    <div class="col-sm-8 col-sm-offset-2">
+        <form action="" method="post">
+
+            {% csrf_token %}
+
+            <h2>Join us on Slack!</h2>
+
+            <p>Several online communities have sprung up to organize. Join one, or start your own.</p>
+
+            <h3>Choose one or more Slacks you'd like to join:</h3>
+
+            <ul class="unstyled-list">
+                {% bootstrap_field form.slack show_label=False %}
+            </ul>
+
+            <h3>And tell us where to send your invite:</h3>
+                {% bootstrap_field form.email show_label=False %}
+
+            {% buttons %}
+                {% bootstrap_button "Submit" button_class="btn-primary" %}
+            {% endbuttons %}
+
+        </form>
+    </div>
+
+
+{% endblock %}

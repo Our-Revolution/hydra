@@ -9,6 +9,7 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^admin/blast-email', views.BlastEmail.as_view(), name='blast-email'),
     url(r'', include('bsd.urls')),
+    url(r'', include('chowda.urls')),
     url('^', include('django.contrib.auth.urls')),
 ]
 

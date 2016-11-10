@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'espresso',
     
     # Hydra specific
+    'chowda',
     'bsd',
     'hydra',
 ]
