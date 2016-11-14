@@ -60,10 +60,10 @@ class EventForm(forms.ModelForm):
             creator_cons_lookup = creator_cons_lookup.pk
         self.fields['creator_cons'].queryset = Constituent.objects.filter(pk=creator_cons_lookup)
 
-        if self.event_type:
-            if self.event_type.contact_phone == 0:
+        if self.instance and self.instance.event_type:
+            if self.instance.event_type.contact_phone == 0:
                 del self.fields['contact_phone']
-            elif self.event_type.contact_phone == -1:
+            elif self.instance.event_type.contact_phone == -1:
                 self.fields['contact_phone'].required = False
 
 
