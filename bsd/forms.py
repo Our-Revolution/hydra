@@ -50,8 +50,7 @@ class EventForm(forms.ModelForm):
         if 'instance' in kwargs and 'initial' in kwargs:
             if hasattr(kwargs['instance'], 'duration') and kwargs['instance'].duration > 60:
                 kwargs['initial']['duration_unit'] = 60
-                kwargs['instance'].duration = kwargs['instance'].duration / kwargs['initial']['duration_unit']
-            
+                kwargs['instance'].duration = kwargs['instance'].duration / kwargs['initial']['duration_unit']            
         
         super(EventForm, self).__init__(*args, **kwargs)
         
@@ -60,6 +59,16 @@ class EventForm(forms.ModelForm):
         if isinstance(creator_cons_lookup, int):
             creator_cons_lookup = creator_cons_lookup.pk
         self.fields['creator_cons'].queryset = Constituent.objects.filter(pk=creator_cons_lookup)
+
+        if self.event_type:
+            if self.event_type.contact_phone == 0:
+                del self.fields['contact_phone']
+            elif self.event_type.contact_phone == -1:
+                self.fields['contact_phone'].required = False
+
+
+    # class Media:
+    #     js = ('https://maps.googleapis.com/maps/api/js?key=%s&libraries=places' % settings.GOOGLE_MAPS_API_KEY,)
         
 
     class Meta:
