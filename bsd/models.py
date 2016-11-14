@@ -169,7 +169,7 @@ class Event(BSDModel):
         (1, 'COUNT'),
         (2, 'FIRST'),
     )
-    TIME_ZONE_CHOICES = (('America/%s' % pair[1], pair[0]) for pair in (('Eastern', 'New_York'), ('Central', 'Chicago'), ('Mountain', 'Denver'), ('Pacific', 'Los_Angeles'), ('Alaska', 'Anchorage'), ('Hawaii', 'Adak')))
+    TIME_ZONE_CHOICES = (('US/%s' % pair, pair) for pair in ('Eastern', 'Central', 'Mountain', 'Pacific', 'Alaska', 'Hawaii'))
     DURATION_MULTIPLIER = (
         (1, 'Minutes'),
         (60, 'Hours'),
