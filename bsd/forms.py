@@ -60,11 +60,15 @@ class EventForm(forms.ModelForm):
             creator_cons_lookup = creator_cons_lookup.pk
         self.fields['creator_cons'].queryset = Constituent.objects.filter(pk=creator_cons_lookup)
 
-        if self.instance and self.instance.event_type:
-            if self.instance.event_type.contact_phone == 0:
-                del self.fields['contact_phone']
-            elif self.instance.event_type.contact_phone == -1:
-                self.fields['contact_phone'].required = False
+        if hasattr(self, 'instance'):
+        
+            # contact phone handling (required vs. optional vs. forbidden)
+            if hasattr(self.instance, 'event_type'):        
+                if self.instance.event_type.contact_phone == 0:
+                    del self.fields['contact_phone']
+                    self.fields['public_phone'].widget = forms.widgets.HiddenInput(attrs={})
+                elif self.instance.event_type.contact_phone == -1:
+                    self.fields['contact_phone'].required = False        
 
 
     # class Media:

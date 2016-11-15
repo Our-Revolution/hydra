@@ -3,7 +3,7 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from .api import BSDModel
 # from .auth import Constituent - no circular imports
-import datetime, localflavor.us.models
+import datetime, localflavor.us.models, pytz
 
 
 # should be a setting, but for quick and dirty purposes..
@@ -252,6 +252,22 @@ class Event(BSDModel):
     
     def __unicode__(self):
         return self.name
+        
+        
+    def __init__(self, *args, **kwargs):
+        super(Event, self).__init__(*args, **kwargs)
+
+        if self.pk:
+            if self.start_tz:
+                utc = pytz.utc
+                destination_timezone = pytz.timezone(self.start_tz)
+                
+                start_date_utc = utc.localize(datetime.datetime.combine(self.start_day, self.start_time))
+                start_date_localized = start_date_utc.astimezone(destination_timezone)
+                
+                self.start_time = start_date_localized.time()
+                self.start_day = start_date_localized.date()
+            
     
     def bsd_error_handle(self, error_dict):
         errors = {}
@@ -279,6 +295,9 @@ class Event(BSDModel):
         # needs integers for boolean representations
         for field in ['rsvp_use_reminder_email', 'rsvp_reminder_email_sent']:
             data[field] = int(bool(data[field]))
+            
+        if self.event_type.contact_phone == 0:
+            del data['contact_phone']
             
         # stored as an integer, but needs that string label for the API            
         data['attendee_visibility'] = self.VISIBILITY_CHOICES[int(data.get('attendee_visiblity', 2))][1]
