@@ -93,7 +93,7 @@ class QuerySetRule(models.Model):
     lookup_type = models.CharField(max_length=12, default='exact', choices=LOOKUP_TYPES)
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
-    field_value = models.CharField(max_length=255,
+    field_value = models.CharField(max_length=255, blank=True,
         help_text=('Can be anything from a number, to a string. Or, do ' +
                    '`now-7 days` or `today+3 days` for fancy timedelta.'))
 
