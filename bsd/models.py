@@ -325,8 +325,8 @@ class Event(BSDModel):
 
 class EventAttendee(models.Model):
     event_attendee_id = models.AutoField(primary_key=True)
-    attendee_cons_id = models.IntegerField()
-    event_id = models.IntegerField()
+    attendee_cons = models.ForeignKey('Constituent', 'events_attended')
+    event = models.ForeignKey('event', 'attendees')
     will_attend = models.IntegerField()
     comment = models.CharField(max_length=255, blank=True, null=True)
     guests = models.IntegerField(blank=True, null=True)
