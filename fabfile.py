@@ -68,6 +68,7 @@ def production():
     env.forward_agent = True
     env.key_filename = '~/.ssh/hydra.pem'
     env.user = 'ubuntu'
+    env.env_name = 'production'
 
 
 def staging():
@@ -76,6 +77,7 @@ def staging():
     env.forward_agent = True
     env.key_filename = '~/.ssh/hydra.pem'
     env.user = 'ubuntu'
+    env.env_name = 'staging'
 
 
 @elb_managed
@@ -84,10 +86,13 @@ def deploy(pip_install=False, migrate=False):
     with cd('hydra'):
         with prefix('source $(which virtualenvwrapper.sh)'):
             with prefix('workon hydra'):
+
                 run('supervisorctl stop gunicorn')
+
                 run('git pull origin master')
 
-                run('./manage.py collectstatic --noinput')
+                if env.env_name != 'staging':
+                    run('./manage.py collectstatic --noinput')
 
                 if str(pip_install).lower() == 'true':
                     run('pip install -r requirements.txt')
@@ -95,6 +100,7 @@ def deploy(pip_install=False, migrate=False):
                 if str(migrate).lower() == 'true':
                     run('./manage.py migrate --settings=hydra.settings_for_migrations')
 
+                
                 run('supervisorctl start gunicorn')
                 
                 # todo: varnish?, etc.
