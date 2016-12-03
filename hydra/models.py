@@ -29,7 +29,8 @@ class EventPromotionRequest(models.Model):
     STATUS_CHOICES = (
         ('new', 'New'),
         ('approved', 'Approved'),
-        ('sent', 'Sent')
+        ('sent', 'Sent'),
+        ('skipped', 'Skipped')
     )
     sender_display_name = models.CharField(max_length=128, null=True)
     sender_email = models.EmailField(null=True)
@@ -50,6 +51,11 @@ class EventPromotionRequest(models.Model):
 
         for req in reqs:
             req._send()
+
+
+    @staticmethod
+    def _mark_approved_as_skipped():
+        EventPromotionRequest.objects.filter(status='approved').update(status='skipped')
 
     def _do_send_to_recipients(self, email_addresses):
 

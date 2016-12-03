@@ -7,3 +7,4 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         EventPromotionRequest._send_approved_emails()
+        EventPromotionRequest._mark_approved_as_skipped()
