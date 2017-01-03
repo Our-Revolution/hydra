@@ -26,13 +26,18 @@ class EventPromotionRequestAdminForm(forms.ModelForm):
         }
 
 
+def mark_skipped(modeladmin, request, queryset):
+    queryset.update(status='skipped')
+mark_skipped.short_description = "Mark selected requests as skipped"
+
 
 @admin.register(EventPromotionRequest)
 class EventPromotionRequestAdmin(admin.ModelAdmin):
-    list_display = ['event_name', 'event_date', 'host_name', 'submitted', 'status']
+    list_display = ['event_name', 'event_date', 'host_name', 'volunteer_count', 'submitted', 'status']
     raw_id_fields = ['event', 'host', 'recipients']
     form = EventPromotionRequestAdminForm
     list_filter = ['status']
+    actions = [mark_skipped]
 
     def event_date(self, obj):
         return obj.event.start_dt.astimezone(timezone(obj.event.start_tz)).strftime("%a, %b%e, %l:%M%P %Z")
