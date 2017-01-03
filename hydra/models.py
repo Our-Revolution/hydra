@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.core.mail import mail_admins
 from django.db import models
 from django.db.models import Count
 from django.contrib.gis.geos import Point
@@ -47,7 +48,7 @@ class EventPromotionRequest(models.Model):
     @staticmethod
     def _send_approved_emails():
 
-        reqs = EventPromotionRequest.objects.filter(status='approved')
+        reqs = EventPromotionRequest.objects.filter(status='approved', )
 
         for req in reqs:
             req._send()
@@ -71,7 +72,17 @@ class EventPromotionRequest(models.Model):
                             })
 
         if post.status_code != 200:
-            raise ValueError(json.loads(post.text)['message'])
+            message = """
+Error message: %(error_message)s
+
+Event link: %(event_link)s
+
+Promotion link: %(promotion_link)s""" % {
+                                            'error_message': json.loads(post.text)['message'],\
+                                            'event_link': self.event.get_absolute_url(),
+                                            'promotion_link': "http://events.ourrevolution.com/admin/hydra/eventpromotionrequest/%s/change/" % self.pk
+                                        }
+            mail_admins("Error sending promotion email", message, fail_silently=True)
 
         return post
     
