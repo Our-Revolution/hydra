@@ -7,7 +7,7 @@ from django.contrib.gis.db import models as geo_models
 from django.contrib.gis.measure import Distance
 from itertools import chain
 from localflavor.us.models import USZipCodeField
-import datetime, json, requests
+import datetime, json, pytz, requests
 
 from bsd.auth import Constituent
 from bsd.models import ConstituentAddress, Event
@@ -48,10 +48,18 @@ class EventPromotionRequest(models.Model):
     @staticmethod
     def _send_approved_emails():
 
-        reqs = EventPromotionRequest.objects.filter(status='approved', )
+        reqs = EventPromotionRequest.objects.filter(status='approved')
 
         for req in reqs:
-            req._send()
+
+            # did we miss it? eh, bummer.
+            if req.event.event_start_dt < datetime.datetime.utcnow().replace(tzinfo=pytz.utc):
+                req.status = 'skipped'
+                req.save()
+
+            # approved events can wait.
+            elif not req.event.flag_approval:
+                req._send()
 
 
     @staticmethod
