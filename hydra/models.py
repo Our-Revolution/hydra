@@ -53,7 +53,7 @@ class EventPromotionRequest(models.Model):
         for req in reqs:
 
             # did we miss it? eh, bummer.
-            if req.event.event_start_dt < datetime.datetime.utcnow().replace(tzinfo=pytz.utc):
+            if req.event.start_dt < datetime.datetime.utcnow().replace(tzinfo=pytz.utc):
                 req.status = 'skipped'
                 req.save()
 
