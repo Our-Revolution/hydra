@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
@@ -59,10 +60,16 @@ class EventCreate(CreateView):
             return super(ModelFormMixin, self).form_valid(form)
             
         except BaseException, e:
-            for exc in e:
-                messages.add_message(self.request, messages.ERROR, "Error creating your event -- %s" % exc[1][0])
-                if hasattr(form, exc[0]):
-                    form.add_error(exc[0], exc[1][0])
+            if hasattr(e, '__iter__'):
+                for exc in e:
+                    messages.add_message(self.request, messages.ERROR, "Error creating your event -- %s" % exc[1][0])
+                    if hasattr(form, exc[0]):
+                        form.add_error(exc[0], exc[1][0])
+            elif isinstance(e, UnicodeError):
+                field =  e[1][e[1][0:e[3]].rfind('&')+1:e[1][0:e[3]].rfind('=')]
+                messages.add_message(self.request, messages.ERROR, "Error creating your event -- You had some special characters in your %s field, please remove those and try again." % field)
+                if field in form.fields:
+                    form.add_error(field, "Please remove special characters and try again.")
             return super(EventCreate, self).form_invalid(form)
             
     def form_invalid(self, form):
@@ -95,17 +102,25 @@ class EventEdit(EventCreatorMixin, UpdateView):
 
 
     def form_valid(self, form):
-        try:
+        # try:
+        if True:
             self.object = form.save()
             messages.add_message(self.request, messages.SUCCESS, "Your event has been updated.")
             return super(ModelFormMixin, self).form_valid(form)
             
-        except BaseException, e:
-            for exc in e:
-                messages.add_message(self.request, messages.ERROR, "Error updating your event -- %s" % exc[1][0])
-                if hasattr(form, exc[0]):
-                    form.add_error(exc[0], exc[1][0])
-            return super(EventEdit, self).form_invalid(form)
+#         except BaseException, e:
+#             import ipdb; ipdb.set_trace()
+#             if hasattr(e, '__iter__'):
+#                 for exc in e:
+#                     messages.add_message(self.request, messages.ERROR, "Error creating your event -- %s" % exc[1][0])
+#                     if hasattr(form, exc[0]):
+#                         form.add_error(exc[0], exc[1][0])
+#             elif isinstance(e, UnicodeError):
+#                 field =  e[1][e[1][0:e[3]].rfind('&')+1:e[1][0:e[3]].rfind('=')]
+#                 if field in form.fields:
+#                     form.add_error(field, "Please remove special characters and try again.")
+#                 messages.add_message(self.request, messages.ERROR, "Error updating your event -- You had some special characters in your %s field, please remove those and try again." % field)
+#             return super(EventEdit, self).form_invalid(form)
     
     
 @class_view_decorator(bsd_login_required)

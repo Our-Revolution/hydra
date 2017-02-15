@@ -40,8 +40,11 @@ class EventForm(forms.ModelForm):
     
     def clean(self):
         cleaned_data = super(EventForm, self).clean()
-        if isinstance(cleaned_data['duration'], int) and isinstance(cleaned_data['duration_unit'], int):
+        # import ipdb; ipdb.set_trace()
+        try:
             cleaned_data['duration'] = int(cleaned_data['duration']) * int(cleaned_data['duration_unit'])
+        except:
+            pass
         return cleaned_data
     
     def __init__(self, *args, **kwargs):

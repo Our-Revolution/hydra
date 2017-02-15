@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from django.conf import settings
 from django.core.serializers.json import DjangoJSONEncoder
 from django.db import models
@@ -57,7 +58,7 @@ class BSDModel(models.Model):
                                         "\n".join([settings.BSD_API_ID, \
                                                     timestamp, \
                                                     base + endpoint, \
-                                                    '&'.join(["%s=%s" % (k, v) for k, v in api_params])]).encode(), \
+                                                    '&'.join(["%s=%s" % (k, v) for k, v in api_params])]), \
                                         hashlib.sha1).hexdigest()))
 
         url = urlparse.urlunparse(['https', settings.BSD_API_HOST, base + endpoint, '', urllib.urlencode(api_params), ''])

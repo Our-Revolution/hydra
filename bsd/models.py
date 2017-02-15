@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 from django.core.exceptions import ValidationError
 from django.db import models
@@ -291,6 +292,11 @@ class Event(BSDModel):
         
         
     def _scrub_event_data_for_api(self, data):
+        
+        # unicooooode
+        for field in ['name', 'description', 'creator_name', 'venue_name', 'venue_addr1', \
+                        'venue_addr2', 'venue_city', 'venue_zip', 'venue_country', 'contact_phone']:
+            data[field] = data[field].encode('utf-8').decode('ascii', 'ignore')
         
         # needs integers for boolean representations
         for field in ['rsvp_use_reminder_email', 'rsvp_reminder_email_sent']:
