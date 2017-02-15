@@ -73,7 +73,7 @@ def production():
 
 def staging():
     env.load_balancer_name = None
-    env.hosts = ['ec2-35-162-6-125.us-west-2.compute.amazonaws.com']
+    env.hosts = ['ec2-35-162-74-89.us-west-2.compute.amazonaws.com']
     env.forward_agent = True
     env.key_filename = '~/.ssh/hydra.pem'
     env.user = 'ubuntu'
@@ -87,7 +87,8 @@ def deploy(pip_install=False, migrate=False):
         with prefix('source $(which virtualenvwrapper.sh)'):
             with prefix('workon hydra'):
 
-                run('supervisorctl stop gunicorn')
+                if env.env_name != 'staging':
+                    run('supervisorctl stop gunicorn')
 
                 run('git pull origin master')
 
@@ -100,8 +101,8 @@ def deploy(pip_install=False, migrate=False):
                 if str(migrate).lower() == 'true':
                     run('./manage.py migrate --settings=hydra.settings_for_migrations')
 
-                
-                run('supervisorctl start gunicorn')
+                if env.env_name != 'staging':
+                    run('supervisorctl start gunicorn')
                 
                 # todo: varnish?, etc.
 
