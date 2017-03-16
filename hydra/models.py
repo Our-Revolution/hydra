@@ -123,7 +123,7 @@ Promotion link: %(promotion_link)s""" % {
             
                 logger.debug("Found %s" % zipcode.zip)
 
-                candidate_constituents = Constituent.objects.filter(addresses__zip=zipcode.zip) \
+                candidate_constituents = Constituent.objects.filter(addresses__zip=zipcode.zip, addresses__is_primary=1) \
                                 .filter(emails__isnull=False) \
                                 .filter(sendableconsgroup__isnull=False) \
                                 .exclude(pk__in=constituents_to_exclude) \
