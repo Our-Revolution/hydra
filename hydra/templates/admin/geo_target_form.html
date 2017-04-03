@@ -23,7 +23,8 @@
         <div>
             <fieldset class="module aligned">
                 {% for field in form.visible_fields %}
-                    <div class="form-row field-{{ field.id_for_label }}">
+                    <div class="form-row field-{{ field.id_for_label }} {% if field.errors %}errors{% endif %}">
+                        {{ field.errors }}
                         <div>
                             <label for="{{ field.id_for_label }}">{{ field.label }}</label>
                             {{ field }}

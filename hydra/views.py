@@ -45,7 +45,15 @@ class GeoTarget(FormView):
 
             cons_addrs = ConstituentAddress.objects.filter(**kwargs)
 
-            poly = GEOSGeometry(form.cleaned_data['geojson'])
+            geojson = json.loads(form.cleaned_data['geojson'])
+
+            if geojson['type'] == 'FeatureCollection':
+                # todo: fetch number, but stick to 1st for now
+                geojson = geojson['features'][0]['geometry']
+
+            # elif geojson['type'] not ['MultiPolygon', 'Polygon']:
+
+            poly = GEOSGeometry(json.dumps(geojson))
 
             for con in cons_addrs:
                point = Point(y=con.latitude, x=con.longitude)
