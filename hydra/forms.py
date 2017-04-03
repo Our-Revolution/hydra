@@ -15,5 +15,5 @@ class BlastEmailForm(forms.Form):
 
 class GeoTargetForm(forms.Form):
     state = forms.CharField(initial="FL", max_length=2, label="State Abbreviation")
-    geojson = forms.CharField(max_length=4096, widget=admin.widgets.AdminTextareaWidget, label="GeoJSON", help_text="You'll need to fetch this from Census.gov or Google or some such; ping Juliana or Jon. :D")
+    geojson = forms.CharField(max_length=16384, widget=admin.widgets.AdminTextareaWidget, label="GeoJSON", help_text="You'll need to fetch this from Census.gov or Google or some such; ping Juliana or Jon. :D")
     primary_only = forms.BooleanField(initial=True, label="Primary Addresses Only", help_text="Recommended")
