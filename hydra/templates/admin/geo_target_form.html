@@ -1,0 +1,51 @@
+{% extends "admin/base_site.html" %}
+
+{% load i18n static %}
+
+{% block extrastyle %}{{ block.super }}<link rel="stylesheet" type="text/css" href="{% static "admin/css/forms.css" %}" />{% endblock %}
+
+{% block branding %}
+<h1 id="site-name"><a href="{% url 'admin:index' %}">Hydra Administration</a></h1>
+{% endblock %}
+
+{% block breadcrumbs %}
+    <div class="breadcrumbs">
+        <a href="{% url 'admin:index' %}">{% trans 'Home' %}</a>
+        {% if title %} &rsaquo; {{ title }}{% endif %}
+    </div>
+{% endblock %}
+
+
+
+{% block content %}
+    <form action="" method="post">
+        {% csrf_token %}
+        <div>
+            <fieldset class="module aligned">
+                {% for field in form.visible_fields %}
+                    <div class="form-row field-{{ field.id_for_label }}">
+                        <div>
+                            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                            {{ field }}
+                            {% if field.help_text %}<p class="help">{{ field.help_text }}</p>{% endif %}
+                        </div>
+                    </div>
+                {% endfor %}
+                <div class="submit-row">
+                    <input type="submit" value="Submit" class="default" name="_save" />
+                </div>
+            </fieldset>
+        </div>
+    </form>
+
+    {% if cons_ids %}
+        <h2>Your Constituent IDs:</h2>
+
+        <h3>Comma Separated:</h3>
+        <pre>{{ cons_ids | join:", " }}</pre>
+
+        <h3>New Line Separated:</h3>
+        <pre>{{ cons_ids | join:"<br />" }}</pre>
+    {% endif %}
+
+{% endblock %}

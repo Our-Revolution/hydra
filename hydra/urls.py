@@ -9,6 +9,7 @@ urlpatterns = [
     url(r'^$', views.IndexView.as_view(), name='index'),
     url(r'^admin/', admin.site.urls),
     url(r'^admin/blast-email', views.BlastEmail.as_view(), name='blast-email'),
+    url(r'^admin/geo-target', views.GeoTarget.as_view(), name='geo-target'),
     url(r'', include('bsd.urls')),
     url(r'', include('chowda.urls')),
     url(r'^login/', auth_views.login, name='login', kwargs={'redirect_authenticated_user': True}),

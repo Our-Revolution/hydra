@@ -1,13 +1,14 @@
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.admin.views.decorators import staff_member_required
+from django.contrib.gis.geos import Point, GEOSGeometry
 from django.shortcuts import redirect
 from django.views.generic.base import TemplateView
 from django.views.generic.edit import FormView
 from bsd.auth import Constituent
 from bsd.decorators import class_view_decorator
-from .forms import BlastEmailForm
-
+from bsd.models import ConstituentAddress
+from .forms import BlastEmailForm, GeoTargetForm
 import csv, json, requests
 
 
@@ -18,6 +19,47 @@ class IndexView(TemplateView):
         if request.user.is_authenticated and isinstance(request.user, Constituent):
             return redirect('events-list')
         return super(IndexView, self).get(request, *args, **kwargs)
+
+
+
+@class_view_decorator(staff_member_required)
+class GeoTarget(FormView):
+    form_class = GeoTargetForm
+    template_name = "admin/geo_target_form.html"
+    success_url = "admin/geo-target"
+
+    def get_context_data(self, *args, **kwargs):
+        context_data = super(GeoTarget, self).get_context_data(*args, **kwargs)
+        context_data['title'] = "GeoTarget BSD Constituents"
+        context_data['has_permission'] = True
+
+        form = kwargs.pop('form', None)
+
+        if form and form.is_valid():
+            
+            cons_ids = []
+            kwargs = {'state_cd': form.cleaned_data['state']}
+
+            if form.cleaned_data['primary_only']:
+                kwargs['is_primary'] = True
+
+            cons_addrs = ConstituentAddress.objects.filter(**kwargs)
+
+            poly = GEOSGeometry(form.cleaned_data['geojson'])
+
+            for con in cons_addrs:
+               point = Point(y=con.latitude, x=con.longitude)
+               if poly.contains(point):
+                  cons_ids.append(con.cons_id)
+
+            context_data['cons_ids'] = cons_ids
+            messages.success(self.request, 'Success! Scroll down to see your constituent IDs')
+
+        return context_data
+
+    def form_valid(self, form):
+        return super(GeoTarget, self).form_invalid(form)
+
 
 
 @class_view_decorator(staff_member_required)
