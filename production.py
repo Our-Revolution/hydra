@@ -5,5 +5,5 @@ debug = True
 errorlog = 'gunicorn_error.log'
 workers = 30
 max_requests = 200
-timeout = 30
+timeout = 120
 graceful_timeout = 30
