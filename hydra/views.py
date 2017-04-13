@@ -85,7 +85,7 @@ class BlastEmail(FormView):
     def get_initial(self):
         return {
             'sender_name': "Our Revolution", # self.request.user,
-            'sender_email': "organizing@ourrevolution.com",
+            'sender_email': "info@ourrevolution.com",
             'message': """
 
 

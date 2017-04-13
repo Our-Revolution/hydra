@@ -90,7 +90,7 @@ Paid for by Our Revolution
 
 Email is one of the most important tools we have to reach supporters like you, but if you’d like to, click here to unsubscribe: https://go.ourrevolution.com/page/unsubscribe/""").render(Context({'obj': obj, 'first_name': first_name }))
             if not obj.sender_email:
-                obj.sender_email = "organizing@ourrevolution.com"
+                obj.sender_email = "info@ourrevolution.com"
         return obj
     
     def get_queryset(self, request):

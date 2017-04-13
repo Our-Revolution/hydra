@@ -58,7 +58,7 @@ ANYMAIL = {
     'MAILGUN_SENDER_DOMAIN': MAILGUN_SERVER_NAME
 }
 
-DEFAULT_FROM_EMAIL = "organizing@ourrevolution.com"
+DEFAULT_FROM_EMAIL = "info@ourrevolution.com"
 
 
 # espresso settings
