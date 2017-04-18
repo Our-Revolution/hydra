@@ -132,7 +132,7 @@ class EventPromote(EventCreatorMixin, CreateView):
     template_name = "promote.html"
     
     def form_invalid(self, form):
-        for field, errors in form.errors:
+        for field, errors in form.errors.items():
             for error in errors:
                 messages.add_message(self.request, messages.ERROR, "Error submitting your request -- %s" % error)
         return super(EventPromote, self).form_invalid(form)
