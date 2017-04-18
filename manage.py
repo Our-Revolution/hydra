@@ -4,8 +4,14 @@ import sys
 import dotenv
 
 if __name__ == "__main__":
-    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "hydra.settings")
+
+    if len(sys.argv) > 1 and sys.argv[1] in ['makemigrations', 'migrate']:
+        os.environ.setdefault("DJANGO_SETTINGS_MODULE", "hydra.settings_for_migrations")
+    else:
+        os.environ.setdefault("DJANGO_SETTINGS_MODULE", "hydra.settings")
+    
     dotenv.read_dotenv()
+    
     try:
         from django.core.management import execute_from_command_line
     except ImportError:

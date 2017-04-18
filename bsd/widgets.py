@@ -47,7 +47,7 @@ class VolunteerCountWidget(HTML5NumberInput):
         if not attrs:
             attrs = {}
         attrs['min'] = 1
-        attrs['max'] = 1000
+        attrs['max'] = 4000
         attrs['size'] = 3
         attrs['style'] = "margin: 0 1ex; text-align: center;"
         return super(VolunteerCountWidget, self).render(name, value, attrs)

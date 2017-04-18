@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     # Hydra specific
     'chowda',
     'bsd',
+    'groups',
     'hydra',
 ]
 
@@ -165,6 +166,8 @@ DATABASES = {
     # Postgres / default
     'default': dj_database_url.config(),
 
+    'groups': dj_database_url.parse(os.environ.get('GROUP_DATABASE_URL', '')),
+
     # Blue State Digital read-only replica, for majortom
     'BSD': {
         'ENGINE': "bsd.mysql",  # hack.
@@ -174,7 +177,7 @@ DATABASES = {
         'PASSWORD': os.environ.get('BSD_DATABASE_PASSWORD'),
         'OPTIONS': {
             'ssl': {
-                'ca': os.path.join(BASE_DIR, os.environ.get('BSD_DATABASE_PATH_TO_CA_CERT')),
+                'ca': os.path.join(BASE_DIR, os.environ.get('BSD_DATABASE_PATH_TO_CA_CERT', '')),
                 'cipher': "DHE-RSA-AES256-SHA",
                 'verify_server_cert': False
             }

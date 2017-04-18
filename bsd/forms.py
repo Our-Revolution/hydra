@@ -1,12 +1,14 @@
 import itertools
 from django import forms
-from .models import Event
 from hydra.models import EventPromotionRequest
+from groups.models import Group
+from .models import Event
 from .auth import Constituent
 from .widgets import *
 
 
 class EventPromoteForm(forms.ModelForm):
+    group = forms.CharField(required=True)
     event = forms.ModelChoiceField(queryset=Event.objects.none(), required=False, widget=forms.widgets.HiddenInput)
     
     def __init__(self, *args, **kwargs):
@@ -19,8 +21,14 @@ class EventPromoteForm(forms.ModelForm):
         self.fields['event'].queryset = Event.objects.filter(pk=event_lookup)
     
     def clean_volunteer_count(self):
-        self.cleaned_data['volunteer_count'] = min(1000, self.cleaned_data['volunteer_count'])
+        self.cleaned_data['volunteer_count'] = min(4000, self.cleaned_data['volunteer_count'])
         return self.cleaned_data['volunteer_count']
+
+    def clean_group(self):
+        try:
+            assert Group.objects.filter(group_id=self.cleaned_data['group']).exists()
+        except AssertionError:
+            self.add_error('group', 'A group matching that Group ID does not exist.')
         
     class Meta:
         model = EventPromotionRequest

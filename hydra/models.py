@@ -11,6 +11,7 @@ import datetime, json, pytz, requests
 
 from bsd.auth import Constituent
 from bsd.models import ConstituentAddress, Event
+from groups.models import Group
 from .fields import CrossDatabaseForeignKey
 
 
@@ -40,6 +41,7 @@ class EventPromotionRequest(models.Model):
     volunteer_count = models.IntegerField()
     event = CrossDatabaseForeignKey(Event, db_constraint=False)
     host = CrossDatabaseForeignKey(Constituent, db_constraint=False, related_name="event_promotion_requests")
+    group = CrossDatabaseForeignKey(Group, db_constraint=False, to_field="group_id", related_name="event_promotion_requests", null=True, blank=True)
     status = models.CharField(max_length=128, choices=STATUS_CHOICES, default='new')
     submitted = models.DateTimeField(null=True, blank=True, auto_now_add=True)
     sent = models.DateTimeField(null=True, blank=True)

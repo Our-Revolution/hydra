@@ -2,9 +2,9 @@
 
 {% load bootstrap3 tz %}
 
-{% block page_title %}Promote Your Event{% endblock %}
+{% block page_title %}Promote Your Group's Event{% endblock %}
 
-{% block title %}Promote Your Event{% endblock %}
+{% block title %}Promote Your Group's Event{% endblock %}
 
 {% block content %}
 
@@ -15,10 +15,12 @@
             
             {{ form.event }}
             
-            <p>Invite nearby attendees to attend your event!</p>
-                            
+            <p>Invite nearby attendees to attend your group's event!</p>
+                
             {% bootstrap_field form.subject %}
             {% bootstrap_field form.message %}
+            
+            {% bootstrap_field form.group_id %}
             
             <p><label for="{{ form.volunteer_count.id_for_label }}">Please send this to {{ form.volunteer_count }} nearby supporters</label></p>
                             
