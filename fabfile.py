@@ -132,7 +132,13 @@ def config_set(**kwargs):
             with prefix('workon hydra'):
                 # manually stop gunicorn
                 run('supervisorctl stop gunicorn')
-                run('cat supervisord.pid | xargs kill')
-                run('supervisord')
-                run('supervisorctl reload')
+
+                kill_the_cat = run('cat supervisord.pid | xargs kill', warn_only=True)
+                if kill_the_cat:
+                    run('pkill supervisord', warn_only=True)
+                time.sleep(2)
+                run('supervisord -c /home/ubuntu/hydra/supervisord.conf')
+                time.sleep(2)
+                run('supervisorctl reload -c /home/ubuntu/hydra/supervisord.conf')
+
                 run('supervisorctl start gunicorn')
