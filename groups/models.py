@@ -66,3 +66,4 @@ class Group(models.Model):
 
     class Meta:
         managed = False
+        db_table = "local_groups_group"
