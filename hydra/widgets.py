@@ -5,24 +5,29 @@ from django.utils.safestring import mark_safe
 
 
 class GroupIdWidget(forms.TextInput):
-    # def render(self, name, value, attrs=None):
-    #     if attrs is None:
-    #         attrs = {}
 
-    #     output = [super(GroupIdWidget, self).render(name, value, attrs)]
-    #     key = self.rel.get_related_field().name
+    def __init__(self, rel, admin_site, attrs=None, using=None):
+        self.rel = rel
+        self.admin_site = admin_site
+        self.db = using
+        super(GroupIdWidget, self).__init__(attrs)
 
-    #     # try:
-    #     if True:
+    def render(self, name, value, attrs=None):
+        if attrs is None:
+            attrs = {}
 
-    #         obj = self.rel.model._default_manager.using(self.db).get(**{key: value})
+        output = [super(GroupIdWidget, self).render(name, value, attrs)]
+        key = self.rel.get_related_field().name
+
+        try:
+
+            obj = self.rel.model._default_manager.using(self.db).get(**{key: value})
             
-    #         # add front-end and back-end link
-    #         output.append("<a href=\"https://ourrevolution.com/groups/%s\">Group Page</a>" % obj.slug)
-    #         output.append(" | <a href=\"https://ourrevolution.com/admin/local_groups/group/%s/change/\">Admin</a>" % obj.pk)
+            # add front-end and back-end link
+            output.append("<a href=\"https://ourrevolution.com/groups/%s\">Group Page</a>" % obj.slug)
+            output.append(" | <a href=\"https://ourrevolution.com/admin/local_groups/group/%s/change/\">Admin</a>" % obj.pk)
 
-    #     # except (ValueError, self.rel.model.DoesNotExist):
-    #     #     pass
+        except (ValueError, self.rel.model.DoesNotExist):
+            pass
 
-    #     return mark_safe(''.join(output))
-    pass
+        return mark_safe(''.join(output))
