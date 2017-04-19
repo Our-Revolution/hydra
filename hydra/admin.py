@@ -8,6 +8,7 @@ from django.template import Context, Template
 from pytz import timezone
 
 from .models import EventPromotionRequest, ZipCode
+from .widgets import GroupIdWidget
 from bsd.models import Event, EventType
 from bsd.auth import Constituent
 
@@ -22,7 +23,8 @@ class EventPromotionRequestAdminForm(forms.ModelForm):
         fields = '__all__'
         widgets = {
             'subject': admin.widgets.AdminTextInputWidget(attrs={'style': "width: 610px"}),
-            'message': admin.widgets.AdminTextareaWidget
+            'message': admin.widgets.AdminTextareaWidget,
+            'group': GroupIdWidget
         }
 
 
@@ -34,7 +36,7 @@ mark_skipped.short_description = "Mark selected requests as skipped"
 @admin.register(EventPromotionRequest)
 class EventPromotionRequestAdmin(admin.ModelAdmin):
     list_display = ['event_name', 'event_date', 'host_name', 'volunteer_count', 'submitted', 'status']
-    raw_id_fields = ['event', 'host', 'recipients', 'group']
+    raw_id_fields = ['event', 'host', 'recipients',]
     form = EventPromotionRequestAdminForm
     list_filter = ['status']
     actions = [mark_skipped]
