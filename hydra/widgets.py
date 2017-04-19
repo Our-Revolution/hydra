@@ -16,6 +16,8 @@ class GroupIdWidget(forms.TextInput):
         try:
 
             obj = Group.objects.get(group_id=value)
+
+            output.append(obj.name)
             
             # add front-end and back-end link
             output.append("<span style=\"margin-left: 1em; font-weight: bold\"><a href=\"https://ourrevolution.com/groups/%s\" target=\"_blank\">Group Page</a>" % obj.slug)
