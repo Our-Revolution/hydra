@@ -18,8 +18,8 @@ class GroupIdWidget(forms.TextInput):
             obj = Group.objects.get(group_id=value)
             
             # add front-end and back-end link
-            output.append("<span style=\"margin-left: 1em; font-weight: bold\"><a href=\"https://ourrevolution.com/groups/%s\">Group Page</a>" % obj.slug)
-            output.append(" | <a href=\"https://ourrevolution.com/admin/local_groups/group/%s/change/\">Admin</a></span>" % obj.pk)
+            output.append("<span style=\"margin-left: 1em; font-weight: bold\"><a href=\"https://ourrevolution.com/groups/%s\" target=\"_blank\">Group Page</a>" % obj.slug)
+            output.append(" | <a href=\"https://ourrevolution.com/admin/local_groups/group/%s/change/\" target=\"_blank\">Admin</a></span>" % obj.pk)
 
         except (ValueError, self.rel.model.DoesNotExist):
             pass
