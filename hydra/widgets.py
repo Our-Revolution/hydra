@@ -11,9 +11,10 @@ class GroupIdWidget(forms.TextInput):
             attrs = {}
 
         output = [super(GroupIdWidget, self).render(name, value, attrs)]
-
         key = self.rel.get_related_field().name
-        try:
+
+        # try:
+        if True:
 
             obj = self.rel.model._default_manager.using(self.db).get(**{key: value})
             
@@ -21,7 +22,7 @@ class GroupIdWidget(forms.TextInput):
             output.append("<a href=\"https://ourrevolution.com/groups/%s\">Group Page</a>" % obj.slug)
             output.append(" | <a href=\"https://ourrevolution.com/admin/local_groups/group/%s/change/\">Admin</a>" % obj.pk)
 
-        except (ValueError, self.rel.model.DoesNotExist):
-            pass
+        # except (ValueError, self.rel.model.DoesNotExist):
+        #     pass
 
         return mark_safe(''.join(output))
