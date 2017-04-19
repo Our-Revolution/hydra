@@ -70,29 +70,71 @@ class EventPromotionRequest(models.Model):
 
     def _do_send_to_recipients(self, email_addresses):
 
-        recipient_variables = dict((email, {}) for email in email_addresses)
-        
-        post = requests.post("https://api.mailgun.net/v3/%s/messages" % settings.MAILGUN_SERVER_NAME,
-                        auth=("api", settings.MAILGUN_ACCESS_KEY),
-                        data={"from": "%s <%s>" % (self.sender_display_name, self.sender_email),
-                                  "to": [", ".join(email_addresses)],
-                                  "subject": self.subject,
-                                  "text": self.message,
-                                  "recipient-variables": (json.dumps(recipient_variables))
-                            })
+        MAX = 1000
 
-        if post.status_code != 200:
-            message = """
-Error message: %(error_message)s
+        if len(email_addresses) > MAX:
 
-Event link: %(event_link)s
+            page = 0
 
-Promotion link: %(promotion_link)s""" % {
-                                            'error_message': json.loads(post.text)['message'],\
-                                            'event_link': self.event.get_absolute_url(),
-                                            'promotion_link': "http://events.ourrevolution.com/admin/hydra/eventpromotionrequest/%s/change/" % self.pk
-                                        }
-            mail_admins("Error sending promotion email", message, fail_silently=True)
+            while True:
+
+                email_addresses_batch = email_addresses[page*MAX:(page+1)*MAX]
+                recipient_variables_batch = dict((email, {}) for email in email_addresses_batch)
+
+                post = requests.post("https://api.mailgun.net/v3/%s/messages" % settings.MAILGUN_SERVER_NAME,
+                                auth=("api", settings.MAILGUN_ACCESS_KEY),
+                                data={"from": "%s <%s>" % (self.sender_display_name, self.sender_email),
+                                          "to": [", ".join(email_addresses_batch)],
+                                          "subject": self.subject,
+                                          "text": self.message,
+                                          "recipient-variables": (json.dumps(recipient_variables_batch))
+                                    })
+
+                if post.status_code != 200:
+                    
+                    message = """
+                Error message: %(error_message)s
+
+                Event link: %(event_link)s
+
+                Promotion link: %(promotion_link)s""" % {
+                                                            'error_message': json.loads(post.text)['message'],\
+                                                            'event_link': self.event.get_absolute_url(),
+                                                            'promotion_link': "http://events.ourrevolution.com/admin/hydra/eventpromotionrequest/%s/change/" % self.pk
+                                                        }
+                    mail_admins("Error sending promotion email", message, fail_silently=True)
+
+                page += 1
+
+                if page * MAX >= len(email_addresses):
+                    break
+
+        else:
+
+            recipient_variables = dict((email, {}) for email in email_addresses)
+
+            post = requests.post("https://api.mailgun.net/v3/%s/messages" % settings.MAILGUN_SERVER_NAME,
+                            auth=("api", settings.MAILGUN_ACCESS_KEY),
+                            data={"from": "%s <%s>" % (self.sender_display_name, self.sender_email),
+                                      "to": [", ".join(email_addresses)],
+                                      "subject": self.subject,
+                                      "text": self.message,
+                                      "recipient-variables": (json.dumps(recipient_variables))
+                                })
+
+            if post.status_code != 200:
+
+                message = """
+            Error message: %(error_message)s
+
+            Event link: %(event_link)s
+
+            Promotion link: %(promotion_link)s""" % {
+                                                        'error_message': json.loads(post.text)['message'],\
+                                                        'event_link': self.event.get_absolute_url(),
+                                                        'promotion_link': "http://events.ourrevolution.com/admin/hydra/eventpromotionrequest/%s/change/" % self.pk
+                                                    }
+                mail_admins("Error sending promotion email", message, fail_silently=True)
 
         return post
     
