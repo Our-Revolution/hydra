@@ -1,27 +1,21 @@
 from django import forms
 from django.utils.html import format_html, format_html_join, smart_urlquote
 from django.utils.safestring import mark_safe
+from groups.models import Group
 
 
 
 class GroupIdWidget(forms.TextInput):
-
-    def __init__(self, rel, admin_site, attrs=None, using=None):
-        self.rel = rel
-        self.admin_site = admin_site
-        self.db = using
-        super(GroupIdWidget, self).__init__(attrs)
 
     def render(self, name, value, attrs=None):
         if attrs is None:
             attrs = {}
 
         output = [super(GroupIdWidget, self).render(name, value, attrs)]
-        key = self.rel.get_related_field().name
 
         try:
 
-            obj = self.rel.model._default_manager.using(self.db).get(**{key: value})
+            obj = Group.objects.get(group_id=value)
             
             # add front-end and back-end link
             output.append("<a href=\"https://ourrevolution.com/groups/%s\">Group Page</a>" % obj.slug)
