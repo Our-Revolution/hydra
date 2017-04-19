@@ -26,7 +26,10 @@ class EventPromoteForm(forms.ModelForm):
 
     def clean_group(self):
         try:
-            assert Group.objects.filter(group_id=self.cleaned_data['group']).exists()
+            group_id = self.cleaned_data['group']
+            if len(group_id) == 3:
+                group_id = '0' + group_id
+            assert Group.objects.filter(group_id=group_id).exists()
         except AssertionError:
             self.add_error('group', 'A group matching that Group ID does not exist.')
         
