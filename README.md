@@ -14,6 +14,7 @@ Prerequisites
 -------------------
 1. [Pip](https://pip.pypa.io/en/stable/installing/)
 2. [Postgres](https://www.postgresql.org/download/)
+3. [Our Revolution's Main Site](https://github.com/Our-Revolution/site) running locally
 3. **Recommended** - [virtualenvwrapper](https://virtualenvwrapper.readthedocs.io/en/latest/)
 
 Installation
@@ -36,6 +37,9 @@ pip install -r requirements.txt
 Download zip code data and extract all files to `data/zipcodes/`
 
 [2015 cartographic boundary file, 5-digit ZIP code tabulation area for United States, 1:500,000 from data.gov](http://www2.census.gov/geo/tiger/GENZ2015/shp/cb_2015_us_zcta510_500k.zip)
+
+#### Main Site Database
+Hydra utilizes the database from [Our Revolution's Main Site](https://github.com/Our-Revolution/site). Make sure you set `GROUP_DATABASE_URL` to that local database in your `.env`.
 
 Usage & Useful Commands
 -------------------
