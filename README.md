@@ -19,7 +19,7 @@ Prerequisites
 
 Installation
 -------------------
-Clone this repository and change into the project directory.
+Clone this repository and navigate to the project directory.
 ```
 git clone git@github.com:Our-Revolution/hydra.git
 cd hydra
