@@ -215,9 +215,11 @@ class EventPromotionRequest(models.Model):
         self.sent = datetime.datetime.now()
         self.save()
     
+    def __unicode__(self):
+        return self.title
 
     def save(self, *args, **kwargs):
-        logger.debug('saving')
+        # logger.debug('saving')
         
         if not self.host_id and self.event and self.event.creator_cons:
             self.host = self.event.creator_cons
