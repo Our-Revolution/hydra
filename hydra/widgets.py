@@ -15,12 +15,9 @@ class GroupIdWidget(forms.TextInput):
         output = [super(GroupIdWidget, self).render(name, value, attrs)]
 
         try:
-            loggin.info(value)
+
             obj = Group.objects.get(group_id=value)
-            logging.info(obj)
-            logging.info(obj.pk)
-            logging.info(obj.name)
-            logging.info(obj.slug)
+
 
             output.append("<strong style=\"margin-left: 1em\">%s</strong>" % obj.name)
             

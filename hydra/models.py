@@ -219,7 +219,7 @@ class EventPromotionRequest(models.Model):
         return str(self.event)
 
     def save(self, *args, **kwargs):
-        # logger.debug('saving')
+        logger.debug('saving')
         
         if not self.host_id and self.event and self.event.creator_cons:
             self.host = self.event.creator_cons
