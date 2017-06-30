@@ -2,7 +2,7 @@ from django import forms
 from django.utils.html import format_html, format_html_join, smart_urlquote
 from django.utils.safestring import mark_safe
 from groups.models import Group
-
+import logging
 
 
 class GroupIdWidget(forms.TextInput):
@@ -14,8 +14,12 @@ class GroupIdWidget(forms.TextInput):
         output = [super(GroupIdWidget, self).render(name, value, attrs)]
 
         try:
-
             obj = Group.objects.get(group_id=value)
+            logging.debug(value)
+            logging.debug(obj)
+            logging.debug(obj.pk)
+            logging.debug(obj.name)
+            logging.debug(obj.slug)
 
             output.append("<strong style=\"margin-left: 1em\">%s</strong>" % obj.name)
             

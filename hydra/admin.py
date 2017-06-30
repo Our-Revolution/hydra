@@ -23,7 +23,8 @@ class EventPromotionRequestAdminForm(forms.ModelForm):
         fields = '__all__'
         widgets = {
             'subject': admin.widgets.AdminTextInputWidget(attrs={'style': "width: 610px"}),
-            'message': admin.widgets.AdminTextareaWidget
+            'message': admin.widgets.AdminTextareaWidget,
+            'group': GroupIdWidget
         }
 
 
