@@ -46,12 +46,15 @@ Usage & Useful Commands
 From the working directory:
 
 ```
+# Create an Admin User
+python manage.py createsuperuser
+
 # Run Local Server
-./manage.py runserver
+python manage.py runserver
 
 # Make Migrations
-./manage.py makemigrations
+python manage.py makemigrations
 
 # Run Migrations
-./manage.py migrate
+python manage.py migrate
 ```

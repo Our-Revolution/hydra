@@ -9,3 +9,4 @@
 data/
 bsd_models_dump.py
 .DS_Store
+.static
