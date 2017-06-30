@@ -25,7 +25,8 @@ class GroupIdWidget(forms.TextInput):
             output.append("<span style=\"margin-left: 1em;\"><a href=\"https://ourrevolution.com/groups/%s\" target=\"_blank\">Group Page</a>" % obj.slug)
             output.append(" | <a href=\"https://ourrevolution.com/admin/local_groups/group/%s/change/\" target=\"_blank\">Admin</a></span>" % obj.pk)
 
-        except (ValueError, AttributeError) as e:
+        except (ValueError, AttributeError) as error:
+            logging.info(error)
             pass
 
         return mark_safe(''.join(output))
