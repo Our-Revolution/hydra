@@ -266,6 +266,11 @@ LOGGING = {
         },
     },
     'loggers': {
+        'django': {
+            'handlers': ['file'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
         'bsd': {
             'handlers': ['file'],
             'level': 'DEBUG',

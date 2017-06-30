@@ -4,6 +4,7 @@ from django.utils.safestring import mark_safe
 from groups.models import Group
 import logging
 
+logger = logging.getLogger(__name__)
 
 class GroupIdWidget(forms.TextInput):
 
@@ -15,11 +16,10 @@ class GroupIdWidget(forms.TextInput):
 
         try:
             obj = Group.objects.get(group_id=value)
-            logging.debug(value)
-            logging.debug(obj)
-            logging.debug(obj.pk)
-            logging.debug(obj.name)
-            logging.debug(obj.slug)
+            logging.info(obj)
+            logging.info(obj.pk)
+            logging.info(obj.name)
+            logging.info(obj.slug)
 
             output.append("<strong style=\"margin-left: 1em\">%s</strong>" % obj.name)
             
