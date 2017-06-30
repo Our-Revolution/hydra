@@ -216,7 +216,7 @@ class EventPromotionRequest(models.Model):
         self.save()
     
     def __unicode__(self):
-        return self.event
+        return str(self.event)
 
     def save(self, *args, **kwargs):
         # logger.debug('saving')
