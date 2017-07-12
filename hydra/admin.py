@@ -34,7 +34,7 @@ mark_skipped.short_description = "Mark selected requests as skipped"
 
 @admin.register(EventPromotionRequest)
 class EventPromotionRequestAdmin(admin.ModelAdmin):
-    list_display = ['event_name', 'event_date', 'host_name', 'volunteer_count', 'submitted', 'status']
+    list_display = ['event_name', 'event_date', 'host_name', 'volunteer_count', 'submitted', 'status','sent']
     raw_id_fields = ['event', 'host', 'recipients',]
     form = EventPromotionRequestAdminForm
     list_filter = ['status']
