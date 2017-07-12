@@ -102,8 +102,7 @@ class EventPromotionRequest(models.Model):
                 Email addresses: %(email_addresses)s""" % {
                                                             'error_message': json.loads(post.text)['message'],\
                                                             'event_link': self.event.get_absolute_url(),
-                                                            'promotion_link': "http://events.ourrevolution.com/admin/hydra/eventpromotionrequest/%s/change/" % self.pk,
-                                                            'email_addresses':[", ".join(email_addresses_batch)]
+                                                            'promotion_link': "http://events.ourrevolution.com/admin/hydra/eventpromotionrequest/%s/change/" % self.pk,'email_addresses':[", ".join(email_addresses_batch)]
                                                         }
                     mail_admins("Error sending promotion email", message, fail_silently=True)
 
@@ -137,8 +136,7 @@ class EventPromotionRequest(models.Model):
             Email addresses: %(email_addresses)s""" % {
                                                         'error_message': json.loads(post.text)['message'],\
                                                         'event_link': self.event.get_absolute_url(),
-                                                        'promotion_link': "http://events.ourrevolution.com/admin/hydra/eventpromotionrequest/%s/change/" % self.pk,
-                                                        'email_addresses':[", ".join(email_addresses)]
+                                                        'promotion_link': "http://events.ourrevolution.com/admin/hydra/eventpromotionrequest/%s/change/" % self.pk,'email_addresses':[", ".join(email_addresses)]
                                                     }
                 mail_admins("Error sending promotion email", message, fail_silently=True)
 
