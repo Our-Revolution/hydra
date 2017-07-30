@@ -8,7 +8,7 @@ import datetime, localflavor.us.models, pytz
 
 
 # should be a setting, but for quick and dirty purposes..
-OUR_REVOLUTION_CHAPTER_ID = 2
+OUR_REVOLUTION_CHAPTER_ID = 1
 
 SENDABLE_CONS_GROUP_ID = 8162
 
