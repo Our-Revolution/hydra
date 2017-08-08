@@ -440,7 +440,7 @@ class SendableConsGroup(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'cons_group_002b42d8d17e'
+        db_table = 'cons_group_e4eb0fc6de2f'
 
 
 
