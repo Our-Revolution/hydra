@@ -10,7 +10,7 @@ import datetime, localflavor.us.models, pytz
 # should be a setting, but for quick and dirty purposes..
 OUR_REVOLUTION_CHAPTER_ID = 1
 
-SENDABLE_CONS_GROUP_ID = 8162
+SENDABLE_CONS_GROUP_ID = 11
 
 
 # looking for this? check auth.py, it got involved.
