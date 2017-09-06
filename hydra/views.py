@@ -77,6 +77,7 @@ class GeoTarget(FormView):
                        point = Point(y=con.latitude, x=con.longitude)
                        if poly.contains(point):
                           cons_ids.append(con.cons_id)
+                    logger.debug('processed chunk ' + i)
 
             else:
                 for con in cons_addrs:
