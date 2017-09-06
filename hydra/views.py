@@ -72,13 +72,13 @@ class GeoTarget(FormView):
                 logger.debug('list larger than 250,000')
                 chunkSize = 250000
                 for i in xrange(0, cons_addrs.count(), chunkSize):
-                    logger.debug('processing chunk ' + i)
+                    logger.debug('processing chunk ' + str(i))
                     chunk = cons_addrs[i:i+chunkSize]
                     for con in chunk:
                        point = Point(y=con.latitude, x=con.longitude)
                        if poly.contains(point):
                           cons_ids.append(con.cons_id)
-                    logger.debug('processed chunk ' + i)
+                    logger.debug('processed chunk ' + str(i))
 
             else:
                 for con in cons_addrs:
