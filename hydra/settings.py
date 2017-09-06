@@ -255,41 +255,51 @@ if not DEBUG:
     INSTALLED_APPS.remove('debug_toolbar')
     
     
-# LOGGING = {
-#     'version': 1,
-#     'disable_existing_loggers': False,
-#     'handlers': {
-#         'file': {
-#             'level': 'DEBUG',
-#             'class': 'logging.FileHandler',
-#             'filename': 'django-debug.log',
-#         },
-#     },
-#     'loggers': {
-#         'django': {
-#             'handlers': ['file'],
-#             'level': 'DEBUG',
-#             'propagate': True,
-#         },
-#         'django.template': {
-#             'handlers': ['file'],
-#             'level': 'INFO',
-#             'propagate': True,
-#         },
-#         'bsd': {
-#             'handlers': ['file'],
-#             'level': 'DEBUG',
-#             'propagate': True,
-#         },
-#         'espresso': {
-#             'handlers': ['file'],
-#             'level': 'DEBUG',
-#             'propagate': True,
-#         },
-#         'hydra': {
-#             'handlers': ['file'],
-#             'level': 'DEBUG',
-#             'propagate': True,
-#         }
-#     }
-# }
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'mail_admins': {
+            'level': 'ERROR',
+            'class': 'django.utils.log.AdminEmailHandler',
+            'include_html': True,
+        },
+        'console': {
+            'level': 'NOTSET',
+            'class': 'logging.StreamHandler',
+        },
+        'file': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': 'django-debug.log',
+        },
+        'SysLog': {
+    		'level': 'NOTSET',
+    		'class': 'logging.handlers.SysLogHandler',
+    		'formatter': 'simple',
+    		'address': ('logs6.papertrailapp.com', 17716)
+    	},
+    },
+    'formatters': {
+    	'simple': {
+    		'format': '%(asctime)s ourrevolution.com: %(message)s',
+            'datefmt': '%Y-%m-%dT%H:%M:%S',
+    	},
+    },
+    'loggers': {
+        '': {
+            'handlers': ['console'],
+            'level': 'NOTSET',
+        },
+        'django.request': {
+            'handlers': ['mail_admins', 'console','SysLog'],
+            'level': 'ERROR',
+            'propagate': True,
+        },
+        'nominations': {
+            'handlers': ['console','SysLog'],
+            'level': 'DEBUG',
+            'propagate': True,
+        }
+    },
+}
