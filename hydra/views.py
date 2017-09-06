@@ -67,18 +67,22 @@ class GeoTarget(FormView):
             
             logger.debug(poly)
 
-            # process in chunks to avoid timeout
+            # process up to 250,000 to avoid timeout
             if cons_addrs.count() > 250000:
                 logger.debug('list larger than 250,000')
-                chunkSize = 250000
-                for i in xrange(0, cons_addrs.count(), chunkSize):
-                    logger.debug('processing chunk ' + str(i))
-                    chunk = cons_addrs[i:i+chunkSize]
-                    for con in chunk:
-                       point = Point(y=con.latitude, x=con.longitude)
-                       if poly.contains(point):
-                          cons_ids.append(con.cons_id)
-                    logger.debug('processed chunk ' + str(i))
+                # chunkSize = 250000
+                # for i in xrange(0, cons_addrs.count(), chunkSize):
+                #     logger.debug('processing chunk ' + str(i))
+                #     chunk = cons_addrs[i:i+chunkSize]
+                #     for con in chunk:
+                #        point = Point(y=con.latitude, x=con.longitude)
+                #        if poly.contains(point):
+                #           cons_ids.append(con.cons_id)
+                #     logger.debug('processed chunk ' + str(i))
+                for con in cons_addrs[1:250000]:
+                   point = Point(y=con.latitude, x=con.longitude)
+                   if poly.contains(point):
+                      cons_ids.append(con.cons_id)
 
             else:
                 for con in cons_addrs:
