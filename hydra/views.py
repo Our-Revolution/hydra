@@ -67,10 +67,10 @@ class GeoTarget(FormView):
             
             logger.debug(poly)
 
-            # process up to 250,000 to avoid timeout
-            if cons_addrs.count() > 250000:
+            # process up to 500000 to avoid timeout
+            if cons_addrs.count() > 500000:
                 logger.debug('list larger than 250,000')
-                for con in cons_addrs[1:250000]:
+                for con in cons_addrs[1:500000]:
                    point = Point(y=con.latitude, x=con.longitude)
                    if poly.contains(point):
                       cons_ids.append(con.cons_id)
@@ -81,7 +81,6 @@ class GeoTarget(FormView):
                    if poly.contains(point):
                       cons_ids.append(con.cons_id)
 
-            logger.debug('done')
 
             context_data['cons_ids'] = cons_ids
             messages.success(self.request, 'Success! Scroll down to see your constituent IDs')
