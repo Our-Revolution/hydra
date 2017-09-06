@@ -282,7 +282,7 @@ LOGGING = {
     },
     'formatters': {
     	'simple': {
-    		'format': '%(asctime)s ourrevolution.com: %(message)s',
+    		'format': '%(asctime)s events.ourrevolution.com: %(message)s',
             'datefmt': '%Y-%m-%dT%H:%M:%S',
     	},
     },
@@ -296,7 +296,7 @@ LOGGING = {
             'level': 'ERROR',
             'propagate': True,
         },
-        'nominations': {
+        'hydra': {
             'handlers': ['console','SysLog'],
             'level': 'DEBUG',
             'propagate': True,
