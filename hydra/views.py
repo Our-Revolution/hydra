@@ -10,7 +10,9 @@ from bsd.decorators import class_view_decorator
 from bsd.models import ConstituentAddress
 from .forms import BlastEmailForm, GeoTargetForm
 import csv, json, requests
+import logging
 
+logger = logging.getLogger(__name__)
 
 class IndexView(TemplateView):
     template_name = 'splash.html'
@@ -35,6 +37,8 @@ class GeoTarget(FormView):
 
         form = kwargs.pop('form', None)
 
+        logger.debug('logging')
+
         if form and form.is_valid():
             
             cons_ids = []
@@ -45,20 +49,30 @@ class GeoTarget(FormView):
 
             cons_addrs = ConstituentAddress.objects.filter(**kwargs)
 
+            logger.debug(cons_addrs)
+            logger.debug(cons_address.count())
+
             geojson = json.loads(form.cleaned_data['geojson'])
+
+            logger.debug(geojson)
 
             if geojson['type'] == 'FeatureCollection':
                 # todo: fetch number, but stick to 1st for now
+                logger.debug('is FeatureCollection')
                 geojson = geojson['features'][0]['geometry']
 
             # elif geojson['type'] not ['MultiPolygon', 'Polygon']:
 
             poly = GEOSGeometry(json.dumps(geojson))
+            
+            logger.debug(poly)
 
             for con in cons_addrs:
                point = Point(y=con.latitude, x=con.longitude)
                if poly.contains(point):
                   cons_ids.append(con.cons_id)
+
+            logger.debug('done')
 
             context_data['cons_ids'] = cons_ids
             messages.success(self.request, 'Success! Scroll down to see your constituent IDs')
