@@ -50,7 +50,7 @@ class GeoTarget(FormView):
             cons_addrs = ConstituentAddress.objects.filter(**kwargs)
 
             logger.debug(cons_addrs)
-            logger.debug(cons_address.count())
+            logger.debug(cons_addrs.count())
 
             geojson = json.loads(form.cleaned_data['geojson'])
 
