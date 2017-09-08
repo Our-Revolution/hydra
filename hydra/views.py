@@ -68,18 +68,18 @@ class GeoTarget(FormView):
             logger.debug(poly)
 
             # process up to 250,000 to avoid timeout
-            if cons_addrs.count() > 250000:
-                logger.debug('list larger than 250,000')
-                for con in cons_addrs[1:250000]:
-                   point = Point(y=con.latitude, x=con.longitude)
-                   if poly.contains(point):
-                      cons_ids.append(con.cons_id)
-
-            else:
-                for con in cons_addrs:
-                   point = Point(y=con.latitude, x=con.longitude)
-                   if poly.contains(point):
-                      cons_ids.append(con.cons_id)
+            # if cons_addrs.count() > 250000:
+            #     logger.debug('list larger than 250,000')
+            #     for con in cons_addrs[1:250000]:
+            #        point = Point(y=con.latitude, x=con.longitude)
+            #        if poly.contains(point):
+            #           cons_ids.append(con.cons_id)
+            # 
+            # else:
+            for con in cons_addrs:
+               point = Point(y=con.latitude, x=con.longitude)
+               if poly.contains(point):
+                  cons_ids.append(con.cons_id)
 
             logger.debug('done')
 
