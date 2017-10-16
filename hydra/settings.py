@@ -21,7 +21,7 @@ ALLOWED_HOSTS = '*'
 # Application definition
 
 INSTALLED_APPS = [
-    
+
     # core Django
     'django.contrib.admin',
     'django.contrib.auth',
@@ -30,14 +30,14 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    
+
     # dev niceties
     'anymail',
     'bootstrap3',
     'cacheops',
     'debug_toolbar',
     'espresso',
-    
+
     # Hydra specific
     'chowda',
     'bsd',
@@ -86,7 +86,7 @@ SERVER_EMAIL = "bugtroll@ourrevolution.com"
 INTERNAL_IPS = ['24.18.176.26', '24.158.161.75']
 
 DEBUG_TOOLBAR_CONFIG = {
-    'SHOW_TOOLBAR_CALLBACK': 'hydra.settings.LOAD_BALANCER_FRIENDLY_SHOW_TOOLBAR'    
+    'SHOW_TOOLBAR_CALLBACK': 'hydra.settings.LOAD_BALANCER_FRIENDLY_SHOW_TOOLBAR'
 }
 
 
@@ -108,7 +108,7 @@ DEBUG_TOOLBAR_PANELS = [
 
 
 def LOAD_BALANCER_FRIENDLY_SHOW_TOOLBAR(request):
-    
+
     if request.META.get('REMOTE_ADDR', None) not in INTERNAL_IPS and request.META.get('HTTP_X_FORWARDED_FOR', None) not in INTERNAL_IPS:
         return False
 
@@ -253,7 +253,7 @@ CACHEOPS_DEGRADE_ON_FAILURE = True
 if not DEBUG:
     MIDDLEWARE.remove('debug_toolbar.middleware.DebugToolbarMiddleware')
     INSTALLED_APPS.remove('debug_toolbar')
-    
+
     
 LOGGING = {
     'version': 1,
