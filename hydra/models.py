@@ -67,6 +67,9 @@ class EventPromotionRequest(models.Model):
                 logger.debug('not req.event.flag_approval')
                 req._send()
 
+            logger.debug(req.event.flag_approval)
+            logger.debug('skipped')
+
 
     @staticmethod
     def _mark_approved_as_skipped():
