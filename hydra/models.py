@@ -70,6 +70,7 @@ class EventPromotionRequest(models.Model):
 
     @staticmethod
     def _mark_approved_as_skipped():
+        logger.debug('Marking approved objects as skipped')
         EventPromotionRequest.objects.filter(status='approved').update(status='skipped')
 
     def _do_send_to_recipients(self, email_addresses):
