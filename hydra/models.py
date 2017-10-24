@@ -62,7 +62,7 @@ class EventPromotionRequest(models.Model):
                 req.status = 'skipped'
                 req.save()
 
-            # approved events can wait.
+            # if event is approved in BSD
             elif not req.event.flag_approval:
                 logger.debug('not req.event.flag_approval')
                 req._send()
