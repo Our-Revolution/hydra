@@ -12,7 +12,6 @@ from bsd.models import ConstituentAddress
 from .forms import BlastEmailForm, GeoTargetForm
 import csv, json, requests
 import logging
-import time
 
 logger = logging.getLogger(__name__)
 
