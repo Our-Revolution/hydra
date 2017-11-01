@@ -9,69 +9,125 @@
 {% endblock %}
 
 {% block breadcrumbs %}
-    <div class="breadcrumbs">
-        <a href="{% url 'admin:index' %}">{% trans 'Home' %}</a>
-        {% if title %} &rsaquo; {{ title }}{% endif %}
-    </div>
+	<div class="breadcrumbs">
+		<a href="{% url 'admin:index' %}">{% trans 'Home' %}</a>
+		{% if title %} &rsaquo; {{ title }}{% endif %}
+	</div>
 {% endblock %}
 
 
 
 {% block content %}
-    <form action="/admin/geo-target" method="post" id="geo_form">
-        {% csrf_token %}
-        <div>
-            <fieldset class="module aligned">
-                {% for field in form.visible_fields %}
-                    <div class="form-row field-{{ field.id_for_label }} {% if field.errors %}errors{% endif %}">
-                        {{ field.errors }}
-                        <div>
-                            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
-                            {{ field }}
-                            {% if field.help_text %}<p class="help">{{ field.help_text }}</p>{% endif %}
-                        </div>
-                    </div>
-                {% endfor %}
-                <div class="submit-row">
-                    <input type="submit" value="Submit" class="default" name="_save" id="submitt_button"/>
-                </div>
-            </fieldset>
-        </div>
-    </form>
+  <ul class="messagelist">
+  </ul>
 
-    {% if cons_ids %}
-        <h2>Your Constituent IDs:</h2>
+  <div id="cons_ids">
+  </div>
 
-        <h3>Comma Separated:</h3>
-        <pre>{{ cons_ids | join:", " }}</pre>
+	<form action="/admin/geo-target" method="post" id="geo_form">
+		{% csrf_token %}
+		<div>
+			<fieldset class="module aligned">
+				{% for field in form.visible_fields %}
+					<div class="form-row field-{{ field.id_for_label }} {% if field.errors %}errors{% endif %}">
+						{{ field.errors }}
+						<div>
+							<label for="{{ field.id_for_label }}">{{ field.label }}</label>
+							{{ field }}
+							{% if field.help_text %}<p class="help">{{ field.help_text }}</p>{% endif %}
+						</div>
+					</div>
+				{% endfor %}
+				<div class="submit-row">
+					<input type="submit" value="Submit" class="default" name="_save" id="submitt_button"/>
+				</div>
+			</fieldset>
+		</div>
+	</form>
 
-        <h3>New Line Separated:</h3>
-        <pre>{{ cons_ids | join:"<br />" }}</pre>
-    {% endif %}
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <!-- Loading animation -->
+  <style>
+  loading {
+    font-size: 30px;
+  }
 
-    <script>
-      $(document).ready(function () {
-        var geoForm = $('#geo_form');
+  .loading:after {
+    overflow: hidden;
+    display: inline-block;
+    vertical-align: bottom;
+    -webkit-animation: ellipsis steps(4,end) 900ms infinite;
+    animation: ellipsis steps(4,end) 900ms infinite;
+    content: "\2026"; /* ascii code for the ellipsis character */
+    width: 0px;
+  }
 
-        $(geoForm).on('submit',function (e){
-          e.preventDefault()
+  @keyframes ellipsis {
+  to {
+    width: 1.25em;
+    }
+  }
 
-          $.ajax({
-            method:$(this).attr('method'),
-            url: $(this).attr('action'),
-            data: $(this).serialize()
-          }).done(function (data) {
-            console.log('submitted');
-            console.log(data);
-          }).fail(function (data) {
-            console.log('Something went wrong.');
-            console.log(data);
+  @-webkit-keyframes ellipsis {
+    to {
+      width: 1.25em;
+    }
+  }
+  </style>
+
+	<script>
+	  $(document).ready(function () {
+  		var geoForm = $('#geo_form');
+
+  		$(geoForm).on('submit',function (e){
+  		  e.preventDefault();
+        clearForm();
+
+  		  $.ajax({
+    			method:$(this).attr('method'),
+    			url: $(this).attr('action'),
+    			data: $(this).serialize()
+  		  }).done(function (data) {
+    			console.log('submitted');
+    			console.log(data);
+          $('.messagelist').html('<li class="success">Success! Your constituent IDs are below.</li>');
+
+          $('#cons_ids').html('\
+            <h2>Your Constituent IDs:</h2>\
+            <h3>Comma Separated:</h3>\
+            <div id="comma_separated"><pre></pre></div>\
+            <h3>New Line Separated:</h3>\
+            <div id="newline_separated"><pre></pre></div>');
+
+          for (i = 0; i < data.length; i++) {
+            if (i == data.length - 1) {
+              $('#comma_separated pre').append(data[i])
+              $('#newline_separated pre').append(data[i])
+            } else {
+              $('#comma_separated pre').append(data[i] + ', ')
+              $('#newline_separated pre').append(data[i] + '<br />')
+            }
+          }
+  		  }).fail(function (data) {
+    			errors = JSON.parse(data.responseJSON);
+          var errorMessages = '';
+
+          $.each(errors, function (key, value) {
+            errorMessages += value[0].message +'</br>'
           })
 
-        })
-      })
-    </script>
+          $('.messagelist').html('<li class="error">' + errorMessages + '</li>');
+    		})
+
+        $('.messagelist').html('<li class="loading warning">Pulling constituents - don\'t leave this page</li>');
+
+  		})
+
+  		function clearForm(form) {
+        $('#cons_ids').html('');
+  		}
+	  })
+	</script>
 
 {% endblock %}
