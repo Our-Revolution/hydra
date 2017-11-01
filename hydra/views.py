@@ -2,6 +2,7 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.gis.geos import Point, GEOSGeometry
+from django.http.response import JsonResponse
 from django.shortcuts import redirect
 from django.views.generic.base import TemplateView
 from django.views.generic.edit import FormView
@@ -23,6 +24,30 @@ class IndexView(TemplateView):
         return super(IndexView, self).get(request, *args, **kwargs)
 
 
+# @staff_member_required
+# def geotarget(request):
+#     if request.method == 'POST':
+#         post_text = request.POST.get('the_post')
+#         response_data = {}
+#
+#         post = Post(text=post_text, author=request.user)
+#         post.save()
+#
+#         response_data['result'] = 'Create post successful!'
+#         response_data['postpk'] = post.pk
+#         response_data['text'] = post.text
+#         response_data['created'] = post.created.strftime('%B %d, %Y %I:%M %p')
+#         response_data['author'] = post.author.username
+#
+#         return HttpResponse(
+#             json.dumps(response_data),
+#             content_type="application/json"
+#         )
+#     else:
+#         return HttpResponse(
+#             json.dumps({"nothing to see": "this isn't happening"}),
+#             content_type="application/json"
+#         )
 
 @class_view_decorator(staff_member_required)
 class GeoTarget(FormView):
@@ -30,31 +55,30 @@ class GeoTarget(FormView):
     template_name = "admin/geo_target_form.html"
     success_url = "admin/geo-target"
 
-    def get_context_data(self, *args, **kwargs):
-        context_data = super(GeoTarget, self).get_context_data(*args, **kwargs)
-        context_data['title'] = "GeoTarget BSD Constituents"
-        context_data['has_permission'] = True
+    def form_invalid(self, form):
+        response = super(GeoTarget, self).form_invalid(form)
+        if self.request.is_ajax():
+            return JsonResponse(form.errors.as_json(), safe=False, status=400)
+        else:
+            return response
 
-        form = kwargs.pop('form', None)
+    def form_valid(self, form):
+        # We make sure to call the parent's form_valid() method because
+        # it might do some processing (in the case of CreateView, it will
+        # call form.save() for example).
+        response = super(GeoTarget, self).form_valid(form)
+        if self.request.is_ajax():
 
-        logger.debug('logging')
-
-        if form and form.is_valid():
-            
             cons_ids = []
             kwargs = {'state_cd': form.cleaned_data['state']}
 
             if form.cleaned_data['primary_only']:
                 kwargs['is_primary'] = True
 
+            # Get all constituent addresses in the state
             cons_addrs = ConstituentAddress.objects.filter(**kwargs)
 
-            logger.debug(cons_addrs)
-            logger.debug(cons_addrs.count())
-
             geojson = json.loads(form.cleaned_data['geojson'])
-
-            logger.debug(geojson)
 
             if geojson['type'] == 'FeatureCollection':
                 # todo: fetch number, but stick to 1st for now
@@ -64,32 +88,15 @@ class GeoTarget(FormView):
             # elif geojson['type'] not ['MultiPolygon', 'Polygon']:
 
             poly = GEOSGeometry(json.dumps(geojson))
-            
-            logger.debug(poly)
 
-            # process up to 250,000 to avoid timeout
-            # if cons_addrs.count() > 250000:
-            #     logger.debug('list larger than 250,000')
-            #     for con in cons_addrs[1:250000]:
-            #        point = Point(y=con.latitude, x=con.longitude)
-            #        if poly.contains(point):
-            #           cons_ids.append(con.cons_id)
-            # 
-            # else:
             for con in cons_addrs:
                point = Point(y=con.latitude, x=con.longitude)
                if poly.contains(point):
                   cons_ids.append(con.cons_id)
 
-            logger.debug('done')
-
-            context_data['cons_ids'] = cons_ids
-            messages.success(self.request, 'Success! Scroll down to see your constituent IDs')
-
-        return context_data
-
-    def form_valid(self, form):
-        return super(GeoTarget, self).form_invalid(form)
+            return JsonResponse(cons_ids, safe=False)
+        else:
+            return response
 
 
 

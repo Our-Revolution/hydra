@@ -18,7 +18,7 @@
 
 
 {% block content %}
-    <form action="" method="post">
+    <form action="/admin/geo-target" method="post" id="geo_form">
         {% csrf_token %}
         <div>
             <fieldset class="module aligned">
@@ -33,7 +33,7 @@
                     </div>
                 {% endfor %}
                 <div class="submit-row">
-                    <input type="submit" value="Submit" class="default" name="_save" />
+                    <input type="submit" value="Submit" class="default" name="_save" id="submitt_button"/>
                 </div>
             </fieldset>
         </div>
@@ -48,5 +48,30 @@
         <h3>New Line Separated:</h3>
         <pre>{{ cons_ids | join:"<br />" }}</pre>
     {% endif %}
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+    <script>
+      $(document).ready(function () {
+        var geoForm = $('#geo_form');
+
+        $(geoForm).on('submit',function (e){
+          e.preventDefault()
+
+          $.ajax({
+            method:$(this).attr('method'),
+            url: $(this).attr('action'),
+            data: $(this).serialize()
+          }).done(function (data) {
+            console.log('submitted');
+            console.log(data);
+          }).fail(function (data) {
+            console.log('Something went wrong.');
+            console.log(data);
+          })
+
+        })
+      })
+    </script>
 
 {% endblock %}

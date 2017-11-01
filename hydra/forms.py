@@ -14,6 +14,7 @@ class BlastEmailForm(forms.Form):
 
 
 class GeoTargetForm(forms.Form):
+    # TODO: Convert state to USState model or similar to allow users to select from dropdown
     state = forms.CharField(initial="FL", max_length=2, label="State Abbreviation")
     geojson = forms.CharField(max_length=1000000, widget=admin.widgets.AdminTextareaWidget, label="GeoJSON", help_text="You'll need to fetch this from Census.gov or Google or some such; ping Juliana or Jon. :D")
     primary_only = forms.BooleanField(initial=True, label="Primary Addresses Only", help_text="Recommended")
