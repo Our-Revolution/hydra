@@ -15,7 +15,7 @@ Prerequisites
 1. [Pip](https://pip.pypa.io/en/stable/installing/)
 2. [Postgres](https://www.postgresql.org/download/)
 3. [Our Revolution's Main Site](https://github.com/Our-Revolution/site) running locally
-3. **Recommended** - [virtualenvwrapper](https://virtualenvwrapper.readthedocs.io/en/latest/)
+4. **Recommended** - [virtualenvwrapper](https://virtualenvwrapper.readthedocs.io/en/latest/)
 
 Installation
 -------------------
