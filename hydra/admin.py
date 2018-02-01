@@ -17,7 +17,7 @@ from bsd.auth import Constituent
 
 class EventPromotionRequestAdminForm(forms.ModelForm):
     send_preview_email_to = forms.CharField(max_length=1024, help_text="Comma separated email addresses -- filling this out will ONLY send a preview.", required=False)
-    
+
     class Meta:
         model = EventPromotionRequest
         fields = '__all__'
@@ -55,7 +55,7 @@ class EventPromotionRequestAdmin(admin.ModelAdmin):
 
     def view_on_site(self, obj):
         return obj.event.get_absolute_url()
-    
+
     def get_object(self, request, object_id, from_field=None):
         obj = super(EventPromotionRequestAdmin, self).get_object(request, object_id)
         if obj is not None:
@@ -63,25 +63,22 @@ class EventPromotionRequestAdmin(admin.ModelAdmin):
             if not obj.sender_display_name:
                 obj.sender_display_name = "%s - Our Revolution" % first_name
             if not obj.sender_email:
-                obj.subject = "Fwd: " + obj.subject
                 obj.message = Template("""Hi --
 
-Your neighbor {{ obj.event.creator_cons.firstname }} is hosting an event and is hoping
-to get some more attendees —— would you be able to attend?
+{{ obj.event.creator_cons.firstname }} is hosting an organizing event in your area that you might be interested in —— are you be able to attend?
 
-Learn more or RSVP here: {{ obj.event.get_absolute_url }}
+Learn more and RSVP here: {{ obj.event.get_absolute_url }}
+
+You can read a message from the organizer below.
 
 Thanks!
 
 {{ first_name }}
 Our Revolution
 
-
----------- Forwarded message ----------
-Subject: {{ obj.subject }}
+-------------------------------------
 
 {{ obj.message }}
-
 
 ----
 Paid for by Our Revolution
@@ -93,20 +90,20 @@ Email is one of the most important tools we have to reach supporters like you, b
             if not obj.sender_email:
                 obj.sender_email = "info@ourrevolution.com"
         return obj
-    
+
     def get_queryset(self, request):
         return super(EventPromotionRequestAdmin, self).get_queryset(request).prefetch_related(Prefetch('event', Event.objects.all()), Prefetch('host', Constituent.objects.all()), Prefetch('event__event_type', EventType.objects.all()))
-    
+
     def event_name(self, obj):
         return obj.event.name
-        
+
     def event_type(self, obj):
         return obj.event.event_type
-        
+
     def host_name(self, obj):
         return obj.event.creator_name
-        
-        
+
+
 @admin.register(ZipCode)
 class ZipCodeAdmin(admin.ModelAdmin):
     search_fields = ['zip']
