@@ -65,8 +65,7 @@ class EventPromotionRequestAdmin(admin.ModelAdmin):
             if not obj.sender_email:
                 obj.message = Template("""Hi --
 
-{{ obj.event.creator_cons.firstname }} is hosting an organizing event in your 
-area that you might be interested in —— are you be able to attend?
+{{ obj.event.creator_cons.firstname }} is hosting an organizing event in your area that you might be interested in —— are you be able to attend?
 
 Learn more or RSVP here: {{ obj.event.get_absolute_url }}
 
