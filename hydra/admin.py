@@ -63,7 +63,6 @@ class EventPromotionRequestAdmin(admin.ModelAdmin):
             if not obj.sender_display_name:
                 obj.sender_display_name = "%s - Our Revolution" % first_name
             if not obj.sender_email:
-                obj.subject = obj.subject
                 obj.message = Template("""Hi --
 
 {{ obj.event.creator_cons.firstname }} is hosting an organizing event in your area that you might be interested in —— are you be able to attend?
