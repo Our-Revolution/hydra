@@ -67,7 +67,9 @@ class EventPromotionRequestAdmin(admin.ModelAdmin):
 
 {{ obj.event.creator_cons.firstname }} is hosting an organizing event in your area that you might be interested in —— are you be able to attend?
 
-Learn more or RSVP here: {{ obj.event.get_absolute_url }}
+Learn more and RSVP here: {{ obj.event.get_absolute_url }}
+
+You can read a message from the organizer below.
 
 Thanks!
 
