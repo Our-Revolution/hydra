@@ -25,8 +25,6 @@ class Command(BaseCommand):
             'is_primary': True
         }
 
-        print kwargs
-
         with open(options['geojson_file']) as data_file:
             geojson = json.load(data_file)
 
@@ -35,10 +33,7 @@ class Command(BaseCommand):
 
         if geojson['type'] == 'FeatureCollection':
             # todo: fetch number, but stick to 1st for now
-            logger.debug('is FeatureCollection')
             geojson = geojson['features'][0]['geometry']
-
-        # elif geojson['type'] not ['MultiPolygon', 'Polygon']:
 
         poly = GEOSGeometry(json.dumps(geojson))
 
@@ -50,3 +45,5 @@ class Command(BaseCommand):
         with open('./cons-ids.csv', 'wb') as myfile:
             wr = csv.writer(myfile)
             wr.writerow(cons_ids)
+
+        logger.debug('Geo targetting finished. Check ./cons-ids.csv')
