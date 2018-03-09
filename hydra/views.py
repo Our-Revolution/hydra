@@ -98,7 +98,7 @@ class BlastEmail(FormView):
 Paid for by Our Revolution
 (not the billionaires)
 
-603 2ND STREET NE - WASHINGTON, DC 20002
+PO BOX 66208 - WASHINGTON, DC 20035
 
 Email is one of the most important tools we have to reach supporters like you, but if you'd like to, click here to unsubscribe: https://go.ourrevolution.com/page/unsubscribe/"""
         }

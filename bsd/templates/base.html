@@ -5,16 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
     <link href="https://fonts.googleapis.com/css?family=Lato:400,700" rel="stylesheet">
- 
+
     {% load bootstrap3 tz %}
     {% bootstrap_css %}
     {% bootstrap_javascript %}
-    
+
     {% load static %}
 	<link rel="stylesheet" type="text/css" href="{% static 'style.css' %}" />
 </head>
 <body>
-    
+
     <section>
         <header>
             <div class="container-fluid">
@@ -34,7 +34,7 @@
 								    <img alt="Our Revolution" height="100%" src="https://ourrevolution.com/img/logo.svg">
 								</a>
 				        	</div>
-				        	
+
 				        	{% if request.user.is_authenticated %}
 					        	<div class="collapse navbar-collapse" id="main-navbar">
 									<ul class="nav navbar-nav navbar-right">
@@ -49,13 +49,13 @@
             </div>
         </header>
     </section>
-    
+
     <div class="container">
         {% bootstrap_messages %}
     </div>
-    
+
     <section>
-    
+
         <div class="container">
             <div class="row">
 
@@ -64,27 +64,27 @@
 		            <h1>{% block title %}{% endblock %}</h1>
 	        	</div>
 			</div>
-	            	
+
                 {% block content %}
                 {% endblock %}
             </div>
         </div>
-        
+
     </section>
-    
+
     <footer class="text-center footer">
 	    <div class="container">
 		    <div class="col-md-6 col-md-offset-3">
 		        <div class="footer__info">
 		        	<p>Paid for by Our Revolution</p>
-					<p>603 2nd St, NE</p>
-					<p>Washington, DC, 20002</p>
+					<p>PO Box 66208</p>
+					<p>Washington, DC 20035</p>
 		        </div>
-  
+
 				<div class="footer__disclaimer">
 					<p>Not authorized by any candidate or candidate committee. Our Revolution is a 501(c)(4) organization.  Donations to Our Revolution are not deductible as charitable contributions for Federal income tax purposes.  All donations are made to support Our Revolution’s general mission and are not designated for any specific activity.</p>
 	        	</div>
-  
+
 				<p class="footer__nav"><a href="mailto:info@ourrevolution.com?subject=Site%20Feedback">Contact Us</a> | <a href="https://ourrevolution.com/privacy-policy" target="_blank">Privacy Policy</a> | <a href="https://ourrevolution.com/page/bylaws" target="_blank">Bylaws</a> | <a href="http://ourrev.us/jobs" target="_blank">Careers</a></p>
       		</div>
     	</div>
