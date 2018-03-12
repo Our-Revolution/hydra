@@ -15,7 +15,8 @@ Prerequisites
 1. [Pip](https://pip.pypa.io/en/stable/installing/)
 2. [Postgres](https://www.postgresql.org/download/)
 3. [Our Revolution's Main Site](https://github.com/Our-Revolution/site) running locally
-4. **Recommended** - [virtualenvwrapper](https://virtualenvwrapper.readthedocs.io/en/latest/)
+4. mysql
+5. **Recommended** - [virtualenvwrapper](https://virtualenvwrapper.readthedocs.io/en/latest/)
 
 Installation
 -------------------
@@ -40,6 +41,11 @@ Download zip code data and extract all files to `data/zipcodes/` before running 
 
 #### Main Site Database
 Hydra utilizes the database from [Our Revolution's Main Site](https://github.com/Our-Revolution/site). Make sure you set `GROUP_DATABASE_URL` to that local database in your `.env`.
+
+#### Create Database
+
+Create a PostgreSQL database with `create_geo_db` command. Add the [following gist](https://gist.github.com/cjmabry/c78f40ae772a742deaa193f3c1534532)
+to your .bash_profile or .zshrc to easily create project databases.
 
 Usage & Useful Commands
 -------------------
