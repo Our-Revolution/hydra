@@ -23,6 +23,7 @@ logger = logging.getLogger(__name__)
 class EventsView(ListView):
     model = Event
     template_name = "event_list.html"
+    logger.debug('events view')
 
     def get_queryset(self):
         logger.debug(self.request.user)
