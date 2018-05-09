@@ -292,12 +292,17 @@ LOGGING = {
             'level': 'NOTSET',
         },
         'django.request': {
-            'handlers': ['mail_admins', 'console','SysLog'],
+            'handlers': ['mail_admins', 'console', 'SysLog'],
             'level': 'ERROR',
             'propagate': True,
         },
         'hydra': {
-            'handlers': ['console','SysLog'],
+            'handlers': ['console', 'SysLog'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+        'bsd': {
+            'handlers': ['console', 'SysLog'],
             'level': 'DEBUG',
             'propagate': True,
         }
