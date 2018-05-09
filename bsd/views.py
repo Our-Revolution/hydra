@@ -26,7 +26,13 @@ class EventsView(ListView):
     logger.debug('events view')
 
     def get_queryset(self):
+        logger.debug('self.request.user:')
         logger.debug(self.request.user)
+
+        logger.debug('vars(self.request.user):')
+        logger.debug(vars(self.request.user))
+
+        logger.debug('Event.objects.filter(creator_cons=self.request.user, start_day__gte=datetime.date.today()):')
         logger.debug(Event.objects.filter(creator_cons=self.request.user, start_day__gte=datetime.date.today()))
         return Event.objects.filter(creator_cons=self.request.user, start_day__gte=datetime.date.today())
 
