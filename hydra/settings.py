@@ -82,7 +82,9 @@ DRIP_TEMPLATES = (
 
 # debug / email reporting settings
 
-ADMINS = [('Jon', 'jon@ourrevolution.com'), ('Chris', 'chris@ourrevolution.com')]
+ADMINS = [
+    ('Our Revolution Tech Team', 'tech-team@ourrevolution.com'),
+]
 
 SERVER_EMAIL = "bugtroll@ourrevolution.com"
 
