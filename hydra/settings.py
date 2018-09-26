@@ -7,6 +7,18 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 CSRF_COOKIE_SECURE = bool(int(os.environ.get('CSRF_COOKIE_SECURE', 1)))
 
+"""Redirect for now until we disable app"""
+REDIRECT_EVENTS_URL = os.environ.get(
+    'REDIRECT_EVENTS_URL',
+    'https://ourrevolution.com/organizing-hub/event/'
+)
+REDIRECT_SLACK_URL = os.environ.get(
+    'REDIRECT_SLACK_URL',
+    'http://ourrev.us/join-us-on-slack'
+)
+
+
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.10/howto/deployment/checklist/
 
